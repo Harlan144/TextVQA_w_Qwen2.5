@@ -54,6 +54,8 @@ The TextVQA dataset \citep{singh2019textvqa} contains 45,336 question-answer pai
 
 Each sample provides: the image, a natural language question, 10 human-annotated answers, and pre-extracted OCR tokens detected in the image. The 10 answers per question enable soft evaluation: predictions matching at least 3 of 10 annotated answers receive full credit. The OCR tokens, extracted by Rosetta \citep{borisyuk2018rosetta}, provide noisy but useful text signals that some of our prompt strategies leverage directly.
 
+The test split does not include ground truth answers---evaluation on the test set requires submission to the official TextVQA evaluation server. Accordingly, all metrics in this work are reported on the validation set (5,000 samples). The training split is used only for LoRA fine-tuning.
+
 % TODO: Add figure showing example TextVQA sample with OCR tokens
 
 \subsection{Model}
@@ -116,11 +118,10 @@ Random seed       & 42 \\
 \end{tabular}
 \end{table}
 
-The evaluation protocol has three stages:
+The evaluation protocol has two stages:
 \begin{enumerate}[nosep]
   \item \textbf{Zero-shot baseline}: Evaluate the pretrained model with the baseline prompt on the full validation set (5,000 samples).
   \item \textbf{Prompt strategy comparison}: Run all five strategies on the validation set to compare their effectiveness.
-  \item \textbf{Best strategy on test}: Apply the top-performing strategy to the test set (5,734 samples) for final reported numbers.
 \end{enumerate}
 
 
