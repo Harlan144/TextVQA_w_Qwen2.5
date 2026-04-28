@@ -37,6 +37,7 @@ class TextVQADataset(Dataset):
             "question": row["question"],
             "answers": row.get("answers", []),       # list of 10 answer strings
             "ocr_tokens": row.get("ocr_tokens", []),
+            "image_classes": row.get("image_classes", []),
             "question_id": row.get("question_id"),
             "image_id": row.get("image_id"),
         }

@@ -112,6 +112,69 @@ def compute_f1(predictions: list[str], ground_truths: list[list[str]]) -> dict:
     return {"f1": 100.0 * sum(scores) / len(scores) if scores else 0.0}
 
 
+def compute_precision_recall(predictions: list[str], ground_truths: list[list[str]]) -> dict:
+    """Compute average token-level precision and recall (best match against any reference)."""
+    precisions = []
+    recalls = []
+    for pred, gts in zip(predictions, ground_truths):
+        pred_tokens = set(normalize_answer(pred).split())
+        best_p, best_r = 0.0, 0.0
+        for gt in gts:
+            gt_tokens = set(normalize_answer(gt).split())
+            if not pred_tokens and not gt_tokens:
+                best_p, best_r = 1.0, 1.0
+                break
+            if not pred_tokens or not gt_tokens:
+                continue
+            common = pred_tokens & gt_tokens
+            p = len(common) / len(pred_tokens)
+            r = len(common) / len(gt_tokens)
+            if p + r > best_p + best_r:
+                best_p, best_r = p, r
+        precisions.append(best_p)
+        recalls.append(best_r)
+    return {
+        "precision": 100.0 * sum(precisions) / len(precisions) if precisions else 0.0,
+        "recall": 100.0 * sum(recalls) / len(recalls) if recalls else 0.0,
+    }
+
+
+def compute_per_category(
+    predictions: list[str],
+    ground_truths: list[list[str]],
+    image_classes: list[list[str]],
+) -> dict:
+    """Break down VQA accuracy by image category.
+
+    Args:
+        predictions: Predicted answer strings.
+        ground_truths: List of lists of ground truth answer strings.
+        image_classes: List of lists of image class labels per sample.
+
+    Returns:
+        Dict with per-category accuracy and counts.
+    """
+    from collections import defaultdict
+    category_scores = defaultdict(list)
+
+    for pred, gts, classes in zip(predictions, ground_truths, image_classes):
+        score = vqa_accuracy_score(pred, gts)
+        if classes:
+            for cls in classes:
+                category_scores[cls].append(score)
+        else:
+            category_scores["_unknown"].append(score)
+
+    per_cat = {}
+    for cat, scores in sorted(category_scores.items(), key=lambda x: -len(x[1])):
+        per_cat[cat] = {
+            "accuracy": 100.0 * sum(scores) / len(scores),
+            "count": len(scores),
+        }
+
+    return {"per_category": per_cat}
+
+
 def compute_llm_judge(
     predictions: list[str],
     ground_truths: list[list[str]],
@@ -194,7 +257,7 @@ def compute_all_metrics(
         Dict of metric_name -> score.
     """
     if metrics is None:
-        metrics = ["vqa_accuracy", "bleu", "meteor", "rouge", "f1"]
+        metrics = ["vqa_accuracy", "bleu", "meteor", "rouge", "f1", "precision_recall"]
 
     results = {}
 
@@ -204,6 +267,7 @@ def compute_all_metrics(
         "meteor": lambda: compute_meteor(predictions, ground_truths),
         "rouge": lambda: compute_rouge(predictions, ground_truths),
         "f1": lambda: compute_f1(predictions, ground_truths),
+        "precision_recall": lambda: compute_precision_recall(predictions, ground_truths),
         "llm_judge": lambda: compute_llm_judge(predictions, ground_truths, model, processor),
     }
 

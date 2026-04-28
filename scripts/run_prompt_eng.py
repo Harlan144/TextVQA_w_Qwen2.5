@@ -25,11 +25,12 @@ def evaluate_strategy(
     """Run a single strategy across the dataset.
 
     Returns:
-        (predictions, ground_truths, detail_records)
+        (predictions, ground_truths, detail_records, image_classes_list)
     """
     strategy_fn = get_strategy(strategy_name)
     predictions = []
     ground_truths = []
+    image_classes_list = []
     details = []
 
     for i in tqdm(range(len(dataset)), desc=strategy_name):
@@ -47,6 +48,7 @@ def evaluate_strategy(
 
         predictions.append(answer)
         ground_truths.append(sample["answers"])
+        image_classes_list.append(sample.get("image_classes", []))
         details.append({
             "question_id": sample.get("question_id"),
             "image_id": sample.get("image_id"),
@@ -54,9 +56,10 @@ def evaluate_strategy(
             "prediction": answer,
             "raw_output": raw_answer,
             "ground_truths": sample["answers"],
+            "image_classes": sample.get("image_classes", []),
         })
 
-    return predictions, ground_truths, details
+    return predictions, ground_truths, details, image_classes_list
 
 
 def run_prompt_engineering(config: dict):
@@ -94,7 +97,7 @@ def run_prompt_engineering(config: dict):
         print(f"  Strategy: {strategy_name}")
         print(f"{'='*60}\n")
 
-        predictions, ground_truths, details = evaluate_strategy(
+        predictions, ground_truths, details, image_classes_list = evaluate_strategy(
             strategy_name, model, processor, dataset, max_new_tokens
         )
 
@@ -102,10 +105,15 @@ def run_prompt_engineering(config: dict):
         per_sample = metrics.pop("per_sample_scores", None)
         print_metrics(metrics)
 
+        # Per-category breakdown
+        from src.evaluate import compute_per_category
+        cat_metrics = compute_per_category(predictions, ground_truths, image_classes_list)
+
         # Save per-strategy results
         out_dir = ensure_dir(output_base / "prompt_eng" / strategy_name / split)
         save_json(metrics, out_dir / "metrics.json")
         save_json(details, out_dir / "predictions.json")
+        save_json(cat_metrics, out_dir / "per_category.json")
         if per_sample is not None:
             save_json({"per_sample_vqa_accuracy": per_sample}, out_dir / "per_sample_scores.json")
 

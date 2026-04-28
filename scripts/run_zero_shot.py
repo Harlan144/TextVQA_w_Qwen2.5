@@ -53,6 +53,7 @@ def run_zero_shot(config: dict):
 
         predictions = []
         ground_truths = []
+        image_classes_list = []
         raw_outputs = []
         results_detail = []
 
@@ -74,6 +75,7 @@ def run_zero_shot(config: dict):
 
             predictions.append(answer)
             ground_truths.append(sample["answers"])
+            image_classes_list.append(sample.get("image_classes", []))
             raw_outputs.append(raw_answer)
 
             results_detail.append({
@@ -83,6 +85,7 @@ def run_zero_shot(config: dict):
                 "prediction": answer,
                 "raw_output": raw_answer,
                 "ground_truths": sample["answers"],
+                "image_classes": sample.get("image_classes", []),
             })
 
         # Compute metrics
@@ -101,10 +104,15 @@ def run_zero_shot(config: dict):
         per_sample = metrics.pop("per_sample_scores", None)
         print_metrics(metrics)
 
+        # Per-category breakdown
+        from src.evaluate import compute_per_category
+        cat_metrics = compute_per_category(predictions, ground_truths, image_classes_list)
+
         # Save results
         out_dir = ensure_dir(output_base / "zero_shot" / strategy_name / split)
         save_json(metrics, out_dir / "metrics.json")
         save_json(results_detail, out_dir / "predictions.json")
+        save_json(cat_metrics, out_dir / "per_category.json")
         if per_sample is not None:
             save_json(
                 {"per_sample_vqa_accuracy": per_sample},

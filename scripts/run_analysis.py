@@ -222,6 +222,50 @@ def analyze_errors(results_dir: Path, output_dir: Path):
     return error_summary
 
 
+def plot_per_category(results_dir: Path, output_dir: Path):
+    """Plot per-category accuracy for the best experiment."""
+    cat_files = list(results_dir.rglob("per_category.json"))
+    if not cat_files:
+        print("No per-category data found — skipping")
+        return
+
+    # Pick the best (prefer prompt_eng over zero_shot)
+    cat_files.sort(key=lambda p: ("prompt_eng" in str(p), p.stat().st_mtime))
+    cat_file = cat_files[-1]
+    exp_name = str(cat_file.relative_to(results_dir).parent)
+    print(f"\nPer-category analysis on: {exp_name}")
+
+    data = load_json(cat_file)
+    per_cat = data.get("per_category", {})
+    if not per_cat:
+        print("  Empty per-category data — skipping")
+        return
+
+    # Sort by count descending, take top 20
+    sorted_cats = sorted(per_cat.items(), key=lambda x: -x[1]["count"])[:20]
+    cats = [c for c, _ in sorted_cats]
+    accs = [v["accuracy"] for _, v in sorted_cats]
+    counts = [v["count"] for _, v in sorted_cats]
+
+    fig, ax1 = plt.subplots(figsize=(12, 6))
+    x = range(len(cats))
+    bars = ax1.bar(x, accs, color=sns.color_palette("viridis", len(cats)), alpha=0.8)
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(cats, rotation=60, ha="right", fontsize=8)
+    ax1.set_ylabel("VQA Accuracy (%)")
+    ax1.set_title(f"Per-Category Accuracy (top 20 by count) — {exp_name}")
+
+    # Overlay count as text
+    for i, (bar, count) in enumerate(zip(bars, counts)):
+        ax1.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.5,
+                 f"n={count}", ha="center", va="bottom", fontsize=6)
+
+    plt.tight_layout()
+    plt.savefig(output_dir / "per_category_accuracy.png", dpi=150)
+    plt.close()
+    print(f"  Saved per_category_accuracy.png")
+
+
 def save_json(data, path):
     """Save data as JSON."""
     from src.utils import save_json as _save
@@ -257,6 +301,10 @@ def main():
     print("\nGenerating plots...")
     plot_accuracy_comparison(experiments, output_dir)
     plot_metrics_heatmap(experiments, output_dir)
+
+    # Per-category analysis
+    print("\nPer-category analysis...")
+    plot_per_category(results_dir, output_dir)
 
     # Error analysis
     print("\nRunning error analysis...")
