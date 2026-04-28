@@ -1,12 +1,17 @@
 """TextVQA dataset loading and preprocessing."""
 
 import logging
+from pathlib import Path
 from typing import Optional
 
 from datasets import load_dataset
 from torch.utils.data import Dataset
 
 logger = logging.getLogger(__name__)
+
+# Default local cache inside the project
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+_DEFAULT_CACHE = str(_PROJECT_ROOT / "data" / "textvqa")
 
 
 class TextVQADataset(Dataset):
@@ -18,7 +23,9 @@ class TextVQADataset(Dataset):
         max_samples: Optional[int] = None,
         cache_dir: Optional[str] = None,
     ):
-        logger.info(f"Loading TextVQA split={split} ...")
+        if cache_dir is None:
+            cache_dir = _DEFAULT_CACHE
+        logger.info(f"Loading TextVQA split={split} (cache_dir={cache_dir}) ...")
         self.hf_dataset = load_dataset(
             "lmms-lab/textvqa", split=split, cache_dir=cache_dir
         )
