@@ -76,8 +76,8 @@ def generate_answer(
     image_inputs, video_inputs = process_vision_info(messages)
     inputs = processor(
         text=[text],
-        images=image_inputs,
-        videos=video_inputs,
+        images=image_inputs if image_inputs else None,
+        videos=video_inputs if video_inputs else None,
         padding=True,
         return_tensors="pt",
     )

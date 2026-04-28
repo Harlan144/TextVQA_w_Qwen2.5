@@ -13,8 +13,9 @@ strategies:
   - baseline
   - ocr_augmented
   - chain_of_thought
-  - instructed_concise
+  - no_system_prompt
   - ocr_cot
+  - ocr_only
 
 split: "validation"
 

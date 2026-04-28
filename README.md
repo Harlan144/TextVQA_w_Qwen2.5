@@ -12,12 +12,13 @@ Evaluate and improve a vision-language model's ability to read and reason about 
 ## Approach
 
 1. **Zero-shot evaluation** — baseline performance of the pretrained model
-2. **Prompt engineering** — 5 strategies designed to improve text reading accuracy:
-   - Baseline (bare question)
-   - OCR-augmented (provide detected text tokens)
-   - Chain-of-thought (step-by-step reasoning)
-   - Instructed-concise (system prompt enforcing short answers)
-   - OCR + CoT combined
+2. **Prompt engineering** — 6 strategies, each ablating one variable from the baseline:
+   - Baseline (system prompt + image + question + concise instruction)
+   - OCR-augmented (+OCR tokens)
+   - Chain-of-thought (+CoT instruction)
+   - No-system-prompt (removes the system prompt)
+   - OCR + CoT (+OCR tokens + CoT instruction)
+   - OCR-only (+OCR tokens, no image — ablation)
 3. **LoRA fine-tuning** — parameter-efficient fine-tuning on the training set
 
 ## Setup
@@ -66,8 +67,9 @@ python scripts/run_prompt_eng.py --max-samples 50 --dtype 4bit
 | BLEU | Secondary | Corpus-level n-gram overlap |
 | METEOR | Secondary | Alignment-based with synonyms and stemming |
 | ROUGE-L | Secondary | Longest common subsequence |
-| F1 | Optional | Token-level precision/recall |
-| LLM-as-a-Judge | Optional | Model-based semantic similarity scoring |
+| F1 | Secondary | Token-level precision/recall |
+| Precision/Recall | Secondary | Token-level precision and recall (reported separately) |
+| LLM-as-a-Judge | Secondary | Model-based semantic similarity (scores 1.0 if prediction matches any of 10 references) |
 
 ## Project Structure
 
@@ -118,24 +120,19 @@ The answers and ocr_tokens come from the dataset itself — we don't run OCR or 
 
 ### Step 2: Build a prompt
 
-`src/prompts.py` takes the image, question, and optionally ocr_tokens, and constructs a chat-format message for the Qwen model. For example, the **baseline** strategy produces:
+`src/prompts.py` takes the image, question, and optionally ocr_tokens, and constructs a chat-format message for the Qwen model. All strategies share a system prompt enforcing concise answers and a common user prompt structure. Each strategy ablates exactly one variable from the baseline.
+
+For example, the **baseline** strategy produces:
 
 ```
-[{"role": "user", "content": [
+[{"role": "system", "content": "You are a visual question answering assistant specialized in reading text from images. Always give short, precise answers..."},
+ {"role": "user", "content": [
     {image},
-    "Answer the question about this image concisely.\nQuestion: What brand of phone is this?\nAnswer:"
+    "Question: What brand of phone is this?\nAnswer the question about this image concisely.\nAnswer:"
 ]}]
 ```
 
-The **OCR-augmented** strategy adds the detected text tokens:
-
-```
-"The following text was detected in the image: [NOKIA, E71, Operator]\n
- Question: What brand of phone is this?\n
- Using the image and the detected text, provide a concise answer.\nAnswer:"
-```
-
-The **instructed-concise** strategy adds a system prompt that tells the model to be brief. The **CoT** strategies ask the model to reason step-by-step before giving a final answer.
+The **OCR-augmented** strategy adds the detected text tokens to the user prompt. The **chain-of-thought** strategy replaces the concise instruction with a step-by-step reasoning instruction. The **no-system-prompt** strategy removes the system prompt to test its contribution. The **OCR-only** strategy includes OCR tokens but removes the image to measure how much the model relies on vision vs. text.
 
 ### Step 3: Model generates an answer
 

@@ -201,16 +201,18 @@ def compute_llm_judge(
             break
         pred = predictions[i]
         gt_list = ground_truths[i]
-        gt_str = "; ".join(gt_list[:3])  # Use first 3 references
+        gt_str = "; ".join(gt_list)
 
         judge_messages = [
             {
                 "role": "system",
                 "content": (
                     "You are a strict answer evaluator. Compare a predicted answer "
-                    "against reference answers. Respond with ONLY a single number "
-                    "between 0.0 and 1.0 indicating semantic similarity. "
-                    "1.0 = perfect match, 0.0 = completely wrong."
+                    "against a list of reference answers. If the prediction matches "
+                    "ANY of the reference answers (same meaning, even if worded "
+                    "differently), respond with 1.0. If it is completely wrong, "
+                    "respond with 0.0. Respond with ONLY a single number between "
+                    "0.0 and 1.0."
                 ),
             },
             {

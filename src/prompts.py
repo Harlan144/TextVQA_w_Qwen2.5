@@ -2,6 +2,16 @@
 
 Each strategy is a callable: (image, question, ocr_tokens=None) -> messages list
 in Qwen chat format.
+
+All strategies share a common structure: a system prompt enforcing concise
+answers, an image, a question, and an instruction line. Each strategy
+ablates exactly one variable relative to baseline:
+  - baseline:           system prompt + image + question + concise instruction
+  - ocr_augmented:      + OCR tokens
+  - chain_of_thought:   + CoT instruction (replaces concise instruction)
+  - no_system_prompt:   - system prompt
+  - ocr_cot:            + OCR tokens + CoT instruction
+  - ocr_only:           + OCR tokens - image
 """
 
 from typing import Optional
@@ -13,23 +23,40 @@ def _image_content(image: Image.Image) -> dict:
     return {"type": "image", "image": image}
 
 
+_SYSTEM_PROMPT = (
+    "You are a visual question answering assistant specialized in reading "
+    "text from images. Always give short, precise answers — just the exact "
+    "text or value requested, nothing else. Never explain your reasoning."
+)
+
+_CONCISE_INSTRUCTION = (
+    "Answer the question about this image concisely.\n"
+    "Answer:"
+)
+
+_COT_INSTRUCTION = (
+    "Think step by step about what text in the image is relevant, "
+    "then give your final answer on the last line after 'Answer:'."
+)
+
+
 # ---------------------------------------------------------------------------
 # Strategy 1: Baseline — bare question
 # ---------------------------------------------------------------------------
 
 def baseline(image: Image.Image, question: str, ocr_tokens: Optional[list[str]] = None) -> list[dict]:
     return [
+        {"role": "system", "content": _SYSTEM_PROMPT},
         {
             "role": "user",
             "content": [
                 _image_content(image),
                 {"type": "text", "text": (
-                    f"Answer the question about this image concisely.\n"
                     f"Question: {question}\n"
-                    f"Answer:"
+                    f"{_CONCISE_INSTRUCTION}"
                 )},
             ],
-        }
+        },
     ]
 
 
@@ -40,6 +67,7 @@ def baseline(image: Image.Image, question: str, ocr_tokens: Optional[list[str]] 
 def ocr_augmented(image: Image.Image, question: str, ocr_tokens: Optional[list[str]] = None) -> list[dict]:
     ocr_text = ", ".join(ocr_tokens) if ocr_tokens else "none detected"
     return [
+        {"role": "system", "content": _SYSTEM_PROMPT},
         {
             "role": "user",
             "content": [
@@ -47,11 +75,10 @@ def ocr_augmented(image: Image.Image, question: str, ocr_tokens: Optional[list[s
                 {"type": "text", "text": (
                     f"The following text was detected in the image: [{ocr_text}]\n"
                     f"Question: {question}\n"
-                    f"Using the image and the detected text, provide a concise answer.\n"
-                    f"Answer:"
+                    f"{_CONCISE_INSTRUCTION}"
                 )},
             ],
-        }
+        },
     ]
 
 
@@ -61,47 +88,36 @@ def ocr_augmented(image: Image.Image, question: str, ocr_tokens: Optional[list[s
 
 def chain_of_thought(image: Image.Image, question: str, ocr_tokens: Optional[list[str]] = None) -> list[dict]:
     return [
-        {
-            "role": "user",
-            "content": [
-                _image_content(image),
-                {"type": "text", "text": (
-                    f"Look at this image carefully.\n"
-                    f"Step 1: Identify all text visible in the image.\n"
-                    f"Step 2: Reason about how the visible text relates to the question.\n"
-                    f"Step 3: Provide the answer.\n\n"
-                    f"Question: {question}\n\n"
-                    f"Think step by step, then give your final answer on the last line after 'Answer:'."
-                )},
-            ],
-        }
-    ]
-
-
-# ---------------------------------------------------------------------------
-# Strategy 4: Instructed-concise — system prompt + strict format
-# ---------------------------------------------------------------------------
-
-def instructed_concise(image: Image.Image, question: str, ocr_tokens: Optional[list[str]] = None) -> list[dict]:
-    return [
-        {
-            "role": "system",
-            "content": (
-                "You are a visual question answering assistant specialized in reading "
-                "text from images. Always give short, precise answers — just the exact "
-                "text or value requested, nothing else. Never explain your reasoning."
-            ),
-        },
+        {"role": "system", "content": _SYSTEM_PROMPT},
         {
             "role": "user",
             "content": [
                 _image_content(image),
                 {"type": "text", "text": (
                     f"Question: {question}\n"
-                    f"Answer with only the exact text or value requested:"
+                    f"{_COT_INSTRUCTION}"
                 )},
             ],
         },
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Ablation: No system prompt — baseline without the system prompt
+# ---------------------------------------------------------------------------
+
+def no_system_prompt(image: Image.Image, question: str, ocr_tokens: Optional[list[str]] = None) -> list[dict]:
+    return [
+        {
+            "role": "user",
+            "content": [
+                _image_content(image),
+                {"type": "text", "text": (
+                    f"Question: {question}\n"
+                    f"{_CONCISE_INSTRUCTION}"
+                )},
+            ],
+        }
     ]
 
 
@@ -112,23 +128,37 @@ def instructed_concise(image: Image.Image, question: str, ocr_tokens: Optional[l
 def ocr_cot(image: Image.Image, question: str, ocr_tokens: Optional[list[str]] = None) -> list[dict]:
     ocr_text = ", ".join(ocr_tokens) if ocr_tokens else "none detected"
     return [
-        {
-            "role": "system",
-            "content": (
-                "You are an expert at reading and understanding text in images. "
-                "You are given an image, detected OCR text tokens from the image, "
-                "and a question. Reason step by step, then provide a concise final answer."
-            ),
-        },
+        {"role": "system", "content": _SYSTEM_PROMPT},
         {
             "role": "user",
             "content": [
                 _image_content(image),
                 {"type": "text", "text": (
-                    f"Detected text in the image: [{ocr_text}]\n\n"
-                    f"Question: {question}\n\n"
-                    f"Think step by step about what text in the image is relevant, "
-                    f"then give your final answer on the last line after 'Answer:'."
+                    f"The following text was detected in the image: [{ocr_text}]\n"
+                    f"Question: {question}\n"
+                    f"{_COT_INSTRUCTION}"
+                )},
+            ],
+        },
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Ablation: OCR-only — text tokens without the image
+# ---------------------------------------------------------------------------
+
+def ocr_only(image: Image.Image, question: str, ocr_tokens: Optional[list[str]] = None) -> list[dict]:
+    ocr_text = ", ".join(ocr_tokens) if ocr_tokens else "none detected"
+    return [
+        {"role": "system", "content": _SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": (
+                    f"The following text was detected in an image: [{ocr_text}]\n"
+                    f"Question: {question}\n"
+                    f"Answer the question concisely.\n"
+                    f"Answer:"
                 )},
             ],
         },
@@ -143,8 +173,9 @@ STRATEGIES = {
     "baseline": baseline,
     "ocr_augmented": ocr_augmented,
     "chain_of_thought": chain_of_thought,
-    "instructed_concise": instructed_concise,
+    "no_system_prompt": no_system_prompt,
     "ocr_cot": ocr_cot,
+    "ocr_only": ocr_only,
 }
 
 

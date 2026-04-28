@@ -16,7 +16,9 @@ evaluation:
     - bleu
     - meteor
     - rouge
-  llm_judge: false         # enable LLM-as-a-Judge (slower)
+    - f1
+    - precision_recall
+    - llm_judge
 
 output:
   base_dir: "results"

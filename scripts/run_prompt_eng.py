@@ -101,7 +101,7 @@ def run_prompt_engineering(config: dict):
             strategy_name, model, processor, dataset, max_new_tokens
         )
 
-        metrics = compute_all_metrics(predictions, ground_truths, metrics=metric_names)
+        metrics = compute_all_metrics(predictions, ground_truths, metrics=metric_names, model=model, processor=processor)
         per_sample = metrics.pop("per_sample_scores", None)
         print_metrics(metrics)
 
