@@ -1,0 +1,41 @@
+model:
+  name: "Qwen/Qwen2.5-VL-3B-Instruct"
+  dtype: "4bit"            # Use 4-bit quantization to fit in limited VRAM
+  device_map: "auto"
+  max_new_tokens: 128
+
+data:
+  dataset: "lmms-lab/textvqa"
+  cache_dir: null
+  max_train_samples: null   # set to small number (e.g. 1000) for quick testing
+  max_val_samples: 500      # evaluate on subset during training
+
+lora:
+  r: 8
+  lora_alpha: 16
+  lora_dropout: 0.05
+  target_modules:
+    - q_proj
+    - v_proj
+
+training:
+  lr: 2.0e-5
+  epochs: 1
+  max_grad_norm: 1.0
+  log_interval: 50
+  save_steps: 500
+
+evaluation:
+  metrics:
+    - vqa_accuracy
+    - bleu
+    - meteor
+    - rouge
+    - f1
+
+strategy: "baseline"
+
+output:
+  base_dir: "results"
+
+seed: 42

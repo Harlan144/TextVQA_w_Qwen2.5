@@ -1,0 +1,28 @@
+model:
+  name: "Qwen/Qwen2.5-VL-3B-Instruct"
+  dtype: "bfloat16"
+  device_map: "auto"
+  max_new_tokens: 128
+
+data:
+  dataset: "lmms-lab/textvqa"
+  cache_dir: null
+  max_samples: null
+
+strategy: "baseline"
+splits:
+  - validation
+
+evaluation:
+  metrics:
+    - vqa_accuracy
+    - bleu
+    - meteor
+    - rouge
+    - f1
+  llm_judge: false
+
+output:
+  base_dir: "results"
+
+seed: 42
