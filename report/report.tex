@@ -26,7 +26,7 @@
 % ============================================================
 
 % TODO: Fill in final numbers after all experiments complete
-I evaluated the Qwen2.5-VL-3B-Instruct vision-language model on the TextVQA dataset using five prompt engineering strategies: a bare-question baseline, OCR-augmented prompting, chain-of-thought (CoT) reasoning, an instructed-concise format with a system prompt, and a combined OCR+CoT approach. All strategies are evaluated on VQA accuracy, BLEU, METEOR, ROUGE-L, F1, and precision/recall. On a 20-sample pilot, OCR-augmented prompting achieves the highest VQA accuracy at 75.0\%, followed by instructed-concise at 71.7\% and the baseline at 60.0\%. Chain-of-thought strategies perform worst (30.0--40.0\%) despite often identifying the correct text, because verbose reasoning outputs fail exact string matching. The dominant finding is that \textit{answer format} matters more than \textit{reasoning depth} for exact-match VQA metrics: providing OCR tokens or constraining output format both outperform step-by-step reasoning. I additionally build LoRA fine-tuning infrastructure and report per-category performance breakdowns across 20 object categories.
+We evaluate the Qwen2.5-VL-3B-Instruct vision-language model on the TextVQA dataset using five prompt engineering strategies: a bare-question baseline, OCR-augmented prompting, chain-of-thought (CoT) reasoning, an instructed-concise format with a system prompt, and a combined OCR+CoT approach. All strategies are evaluated on VQA accuracy, BLEU, METEOR, ROUGE-L, F1, and precision/recall. On a 20-sample pilot, OCR-augmented prompting achieves the highest VQA accuracy at 75.0\%, followed by instructed-concise at 71.7\% and the baseline at 60.0\%. Chain-of-thought strategies perform worst (30.0--40.0\%) despite often identifying the correct text, because verbose reasoning outputs fail exact string matching. The dominant finding is that \textit{answer format} matters more than \textit{reasoning depth} for exact-match VQA metrics: providing OCR tokens or constraining output format both outperform step-by-step reasoning. LoRA fine-tuning infrastructure is additionally built, and per-category performance breakdowns across 20 object categories are reported.
 
 
 % ============================================================
@@ -35,11 +35,11 @@ I evaluated the Qwen2.5-VL-3B-Instruct vision-language model on the TextVQA data
 
 Semantic understanding of text embedded in natural images is a core challenge for vision-language models. Unlike standard VQA, where questions can often be answered from visual features alone, TextVQA \citep{singh2019textvqa} requires models to read text visible in real-world scenes---signs, labels, phone displays, product packaging---and reason about it to produce a correct answer.
 
-Here, I evaluate Qwen2.5-VL-3B-Instruct \citep{bai2023qwenvl} on the TextVQA dataset using prompt engineering. Rather than modifying model parameters, I design five prompt strategies that vary along two axes: (1) whether the model receives pre-extracted OCR tokens as auxiliary input, and (2) whether the model is asked to reason step-by-step or produce a concise direct answer. This ablation-style comparison isolates the contribution of each design choice to final VQA accuracy.
+Here, we evaluate Qwen2.5-VL-3B-Instruct \citep{bai2023qwenvl} on the TextVQA dataset using prompt engineering. Rather than modifying model parameters, we design five prompt strategies that vary along two axes: (1) whether the model receives pre-extracted OCR tokens as auxiliary input, and (2) whether the model is asked to reason step-by-step or produce a concise direct answer.
 
-The TextVQA evaluation protocol uses exact string matching with answer normalization, which creates a fundamental tension between reasoning depth and answer format. Chain-of-thought prompting encourages richer intermediate reasoning but produces verbose outputs that fail exact matching, even when the model identifies the correct text. This tension is the central theme of my results.
+The TextVQA evaluation protocol uses exact string matching with answer normalization, which creates a fundamental tension between reasoning depth and answer format. Chain-of-thought prompting encourages richer intermediate reasoning but produces verbose outputs that fail exact matching, even when the model identifies the correct text. This tension is the central theme of our results.
 
-Beyond the prompt engineering comparison, I build LoRA fine-tuning infrastructure to enable parameter-efficient adaptation on the TextVQA training set. I evaluate all models with VQA accuracy (primary), BLEU, METEOR, ROUGE-L, F1, precision/recall, and per-category accuracy breakdowns.
+Beyond the prompt engineering comparison, we build LoRA fine-tuning infrastructure to enable parameter-efficient adaptation on the TextVQA training set. All strategies are evaluated with VQA accuracy (primary), BLEU, METEOR, ROUGE-L, F1, precision/recall, and per-category accuracy breakdowns.
 
 All code is available at \url{https://github.com/Harlan144/TextVQA_w_Qwen2.5}.
 
@@ -52,19 +52,19 @@ All code is available at \url{https://github.com/Harlan144/TextVQA_w_Qwen2.5}.
 
 The TextVQA dataset \citep{singh2019textvqa} contains 45,336 question-answer pairs across 28,408 images sourced from OpenImages. Questions require reading and reasoning about text visible in natural scenes. The dataset is split into 34,602 training, 5,000 validation, and 5,734 test samples.
 
-Each sample provides: the image, a natural language question, 10 human-annotated answers, and pre-extracted OCR tokens detected in the image. The 10 answers per question enable soft evaluation: predictions matching at least 3 of 10 annotated answers receive full credit. The OCR tokens, extracted by Rosetta \citep{borisyuk2018rosetta}, provide noisy but useful text signals that some of my prompt strategies leverage directly.
+Each sample provides: the image, a natural language question, 10 human-annotated answers, and pre-extracted OCR tokens detected in the image. The 10 answers per question enable soft evaluation: predictions matching at least 3 of 10 annotated answers receive full credit. The OCR tokens, extracted by Rosetta \citep{borisyuk2018rosetta}, provide noisy but useful text signals that some of our prompt strategies leverage directly.
 
 % TODO: Add figure showing example TextVQA sample with OCR tokens
 
 \subsection{Model}
 
-I use Qwen2.5-VL-3B-Instruct, a 3-billion parameter vision-language model from the Qwen2.5-VL family \citep{bai2023qwenvl}. The model combines a ViT-based vision encoder with a causal language model decoder, supporting variable-resolution image inputs and instruction-following via chat-format prompting.
+We use Qwen2.5-VL-3B-Instruct, a 3-billion parameter vision-language model from the Qwen2.5-VL family \citep{bai2023qwenvl}. The model combines a ViT-based vision encoder with a causal language model decoder, supporting variable-resolution image inputs and instruction-following via chat-format prompting.
 
 The model is loaded in 4-bit quantization (NF4 via bitsandbytes with double quantization) to fit within available GPU memory, reducing VRAM usage from approximately 7~GB (bfloat16) to approximately 2--3~GB. Inference uses greedy decoding with a maximum of 128 new tokens. All experiments use a fixed random seed of 42.
 
 \subsection{Prompt Strategies}
 
-I design five prompt strategies, each producing Qwen chat-format messages containing the image and a text prompt. Table~\ref{tab:strategies} summarises the strategies and their design rationale.
+We design five prompt strategies, each producing Qwen chat-format messages containing the image and a text prompt. Table~\ref{tab:strategies} summarises the strategies and their design rationale.
 
 \begin{table}[H]
 \centering
@@ -84,17 +84,17 @@ OCR + CoT          & Yes & Yes & OCR tokens with system prompt and step-by-step 
 \end{tabular}
 \end{table}
 
-The key design tension is between reasoning depth and answer conciseness. CoT strategies encourage the model to identify text and reason about it, but produce multi-sentence outputs. Since TextVQA uses exact string matching, verbose answers score poorly even when the correct text is present in the response. For CoT strategies, I parse the model output for the last line beginning with ``Answer:'' and extract everything after it; if no such line exists, the full output is used.
+The key design tension is between reasoning depth and answer conciseness. CoT strategies encourage the model to identify text and reason about it, but produce multi-sentence outputs. Since TextVQA uses exact string matching, verbose answers score poorly even when the correct text is present in the response. For CoT strategies, we parse the model output for the last line beginning with ``Answer:'' and extract everything after it; if no such line exists, the full output is used.
 
 \subsection{Evaluation Metrics}
 
 \textbf{VQA Accuracy} (primary) is the official TextVQA metric. Predictions and ground truths are normalized (lowercase, remove articles and punctuation, convert number words to digits), then scored as $\text{Acc} = \min(1,\; n_{\text{match}} / 3)$ where $n_{\text{match}}$ is the count of 10 annotated answers matching the prediction. The final score is the mean across all questions.
 
-Secondary metrics include: \textbf{BLEU} (corpus-level n-gram overlap with smoothing), \textbf{METEOR} (alignment-based with synonym matching), \textbf{ROUGE-L} (longest common subsequence F-measure), \textbf{F1} (token-level precision/recall harmonic mean, best match against any reference), and \textbf{Precision/Recall} (token-level, reported separately). For per-category analysis, I compute VQA accuracy broken down by the image object classes provided in the dataset.
+Secondary metrics include: \textbf{BLEU} (corpus-level n-gram overlap with smoothing), \textbf{METEOR} (alignment-based with synonym matching), \textbf{ROUGE-L} (longest common subsequence F-measure), \textbf{F1} (token-level precision/recall harmonic mean, best match against any reference), and \textbf{Precision/Recall} (token-level, reported separately). For per-category analysis, VQA accuracy is broken down by the image object classes provided in the dataset.
 
 \subsection{LoRA Fine-Tuning Infrastructure}
 
-I additionally implement LoRA \citep{hu2022lora} fine-tuning infrastructure for parameter-efficient adaptation. The configuration targets the query and value projection layers ($r=8$, $\alpha=16$, dropout 0.05) with AdamW ($lr=2 \times 10^{-5}$). Training formats each sample as a chat conversation with the image, question, and target answer, with input tokens masked from the loss. This infrastructure is built and tested but full training runs are reported separately.
+We additionally implement LoRA \citep{hu2022lora} fine-tuning infrastructure for parameter-efficient adaptation. The configuration targets the query and value projection layers ($r=8$, $\alpha=16$, dropout 0.05) with AdamW ($lr=2 \times 10^{-5}$). Training formats each sample as a chat conversation with the image, question, and target answer, with input tokens masked from the loss. This infrastructure is built and tested but full training runs are reported separately.
 
 \subsection{Experimental Setup}
 
@@ -119,7 +119,7 @@ Random seed       & 42 \\
 The evaluation protocol has three stages:
 \begin{enumerate}[nosep]
   \item \textbf{Zero-shot baseline}: Evaluate the pretrained model with the baseline prompt on the full validation set (5,000 samples).
-  \item \textbf{Prompt strategy comparison}: Run all five strategies on the validation set. This serves as an ablation study over prompt design choices.
+  \item \textbf{Prompt strategy comparison}: Run all five strategies on the validation set to compare their effectiveness.
   \item \textbf{Best strategy on test}: Apply the top-performing strategy to the test set (5,734 samples) for final reported numbers.
 \end{enumerate}
 
@@ -130,7 +130,7 @@ The evaluation protocol has three stages:
 
 \subsection{Pilot Study (20 Samples)}
 
-I first ran all five strategies on 20 validation samples to verify the pipeline and identify trends before committing to the full evaluation.
+All five strategies were first run on 20 validation samples to verify the pipeline and identify trends before committing to the full evaluation.
 
 \begin{table}[H]
 \centering
@@ -178,14 +178,14 @@ Instructed-Concise & --   & --   & --    & --    & --   & --   & -- \\
 % \end{figure}
 
 
-\subsection{Ablation Analysis}
+\subsection{Strategy Comparison}
 
-The five-strategy comparison serves as an ablation over prompt design choices, isolating three factors:
+Comparing across strategies reveals clear patterns in what helps and what hurts on exact-match VQA metrics:
 
 \begin{itemize}[nosep]
-  \item \textbf{OCR tokens}: Baseline vs.\ OCR-Augmented isolates the effect of providing pre-extracted text. OCR-augmented prompting improves VQA accuracy by +15.0 points in the pilot (60.0 $\to$ 75.0), the single largest improvement from any design choice.
-  \item \textbf{Output format}: Baseline vs.\ Instructed-Concise isolates the effect of a system prompt enforcing short answers. This improves accuracy by +11.7 points (60.0 $\to$ 71.7) without any additional information---purely format constraint.
-  \item \textbf{Chain-of-thought}: Baseline vs.\ CoT isolates the effect of step-by-step reasoning. CoT \textit{reduces} VQA accuracy by 30.0 points (60.0 $\to$ 30.0), the largest negative effect. The OCR+CoT combination (40.0) partially recovers with OCR tokens but still underperforms baseline.
+  \item \textbf{OCR tokens help significantly.} OCR-augmented prompting improves VQA accuracy by +15.0 points over baseline in the pilot (60.0 $\to$ 75.0), the single largest improvement from any design choice.
+  \item \textbf{Constraining output format helps.} The instructed-concise strategy improves accuracy by +11.7 points (60.0 $\to$ 71.7) without any additional information---purely by enforcing short answers via a system prompt.
+  \item \textbf{Chain-of-thought reasoning hurts.} CoT \textit{reduces} VQA accuracy by 30.0 points (60.0 $\to$ 30.0), the largest negative effect. The OCR+CoT combination (40.0) partially recovers with OCR tokens but still underperforms baseline.
 \end{itemize}
 
 % TODO: Update with full validation numbers
@@ -206,7 +206,7 @@ The dominant finding is that answer format matters more than reasoning depth for
 
 \subsection{Error Analysis}
 
-I categorise incorrect predictions from the best-performing strategy into four error types:
+Incorrect predictions from the best-performing strategy are categorised into four error types:
 
 \begin{enumerate}[nosep]
   \item \textbf{Wrong answer}: The model reads different text or misinterprets the question entirely.
@@ -241,7 +241,7 @@ This highlights a broader limitation of exact-match VQA evaluation. Metrics like
 
 \subsection{OCR Tokens as Auxiliary Input}
 
-OCR-augmented prompting provides the largest accuracy improvement (+15 points over baseline in the pilot). This suggests that Qwen2.5-VL-3B's own text recognition from images is imperfect, and pre-extracted OCR tokens compensate for this weakness. The OCR tokens from the dataset were extracted by Rosetta \citep{borisyuk2018rosetta} and are noisy (misspellings, partial detections), yet even noisy text cues help the model ground its answer in the actual text content of the image.
+OCR-augmented prompting provides the largest accuracy improvement (+15 points over baseline in the pilot). This suggests that Qwen2.5-VL-3B's own text recognition from images is imperfect, and pre-extracted OCR tokens compensate for this weakness. The OCR tokens in the dataset were extracted by Rosetta \citep{borisyuk2018rosetta} and are noisy (misspellings, partial detections), yet even noisy text cues help the model ground its answer in the actual text content of the image.
 
 \subsection{Comparison to Published Baselines}
 
@@ -249,7 +249,7 @@ OCR-augmented prompting provides the largest accuracy improvement (+15 points ov
 
 \subsection{Limitations}
 
-Several limitations should be noted. First, I evaluate only one model (Qwen2.5-VL-3B); a multi-model comparison would strengthen the generality of findings about prompt strategy effectiveness. Second, the 4-bit quantization may reduce model capability relative to full-precision inference, though this is necessary given GPU memory constraints. Third, my prompt strategies are manually designed; automated prompt optimisation (e.g., DSPy or OPRO) could potentially find better formulations. Fourth, CoT strategies use a simple ``Answer:'' parsing heuristic that may miss correct answers formatted differently. Finally, while I build LoRA fine-tuning infrastructure, full training runs and comparison against prompt engineering would provide a more complete picture.
+Several limitations should be noted. First, only one model (Qwen2.5-VL-3B) is evaluated; a multi-model comparison would strengthen the generality of findings about prompt strategy effectiveness. Second, the 4-bit quantization may reduce model capability relative to full-precision inference, though this is necessary given GPU memory constraints. Third, the prompt strategies are manually designed; automated prompt optimisation (e.g., DSPy or OPRO) could potentially find better formulations. Fourth, CoT strategies use a simple ``Answer:'' parsing heuristic that may miss correct answers formatted differently. Finally, while LoRA fine-tuning infrastructure is built, full training runs and comparison against prompt engineering would provide a more complete picture.
 
 
 % ============================================================
@@ -258,7 +258,7 @@ Several limitations should be noted. First, I evaluate only one model (Qwen2.5-V
 
 % TODO: Finalise with full results
 
-I evaluated Qwen2.5-VL-3B-Instruct on TextVQA using five prompt engineering strategies varying in OCR token usage, chain-of-thought reasoning, and output format constraints. OCR-augmented prompting and instructed-concise formatting both substantially improve VQA accuracy over the baseline, while chain-of-thought reasoning reduces accuracy despite producing richer intermediate reasoning.
+We evaluated Qwen2.5-VL-3B-Instruct on TextVQA using five prompt engineering strategies varying in OCR token usage, chain-of-thought reasoning, and output format constraints. OCR-augmented prompting and instructed-concise formatting both substantially improve VQA accuracy over the baseline, while chain-of-thought reasoning reduces accuracy despite producing richer intermediate reasoning.
 
 The practical takeaway is clear: for exact-match VQA evaluation, answer format matters more than reasoning depth. Providing auxiliary OCR tokens and constraining output to short, direct answers are more effective than encouraging step-by-step reasoning. This finding is specific to exact-match metrics; for applications where semantic correctness matters more than exact formatting, CoT strategies may be preferable.
 
