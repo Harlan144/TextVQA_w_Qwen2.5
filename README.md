@@ -101,3 +101,88 @@ results/                 Auto-generated outputs
 - Python 3.12
 - NVIDIA GPU with CUDA support (tested on H100 NVL)
 - ~3 GB VRAM (4-bit quantized) or ~7 GB (bfloat16)
+
+## How the Pipeline Works
+
+### Step 1: Load a sample from the dataset
+
+`src/data.py` loads the TextVQA dataset from `data/textvqa/` (downloaded from HuggingFace and cached locally as Arrow files). Each sample contains:
+
+- **image**: a PIL Image (the photo with text in it)
+- **question**: e.g. "What brand of phone is this?"
+- **answers**: 10 human-annotated answers, e.g. `["nokia", "Nokia", "NOKIA", ...]`
+- **ocr_tokens**: text detected in the image by an OCR system (Rosetta), e.g. `["NOKIA", "E71", "Operator"]`
+- **image_classes**: object categories in the image, e.g. `["phone"]`
+
+The answers and ocr_tokens come from the dataset itself — we don't run OCR or annotation ourselves.
+
+### Step 2: Build a prompt
+
+`src/prompts.py` takes the image, question, and optionally ocr_tokens, and constructs a chat-format message for the Qwen model. For example, the **baseline** strategy produces:
+
+```
+[{"role": "user", "content": [
+    {image},
+    "Answer the question about this image concisely.\nQuestion: What brand of phone is this?\nAnswer:"
+]}]
+```
+
+The **OCR-augmented** strategy adds the detected text tokens:
+
+```
+"The following text was detected in the image: [NOKIA, E71, Operator]\n
+ Question: What brand of phone is this?\n
+ Using the image and the detected text, provide a concise answer.\nAnswer:"
+```
+
+The **instructed-concise** strategy adds a system prompt that tells the model to be brief. The **CoT** strategies ask the model to reason step-by-step before giving a final answer.
+
+### Step 3: Model generates an answer
+
+`src/model.py` sends the prompt to Qwen2.5-VL-3B-Instruct:
+
+1. `processor.apply_chat_template()` converts the message list into the token format Qwen expects
+2. `process_vision_info()` extracts the PIL image and converts it to pixel tensors
+3. `processor()` tokenizes the text and image together into model inputs
+4. `model.generate()` runs autoregressive generation (up to 128 new tokens)
+5. The generated token IDs are decoded back to text, e.g. `"Nokia"`
+
+The model sees the actual image pixels (processed by a ViT vision encoder) and the text prompt (processed by the language model). It "reads" text in the image through its vision encoder — not from the ocr_tokens (unless the prompt strategy explicitly includes them).
+
+For CoT strategies, the model might output something like: `"The phone has NOKIA written on it, so the brand is Nokia. Answer: Nokia"`. We parse the text after `"Answer:"` to extract just `"Nokia"`.
+
+### Step 4: Grade the answer
+
+`src/evaluate.py` and `src/utils.py` compare the model's prediction against the 10 human answers.
+
+**Answer normalization** (applied to both prediction and ground truths):
+- Lowercase: `"Nokia"` → `"nokia"`
+- Remove articles: `"the nokia"` → `"nokia"`
+- Remove punctuation: `"Nokia."` → `"nokia"`
+- Number words to digits: `"two"` → `"2"`
+- Expand contractions: `"dont"` → `"don't"`
+
+**VQA Accuracy scoring** (per question):
+- Count how many of the 10 ground truth answers match the normalized prediction
+- Score = `min(1.0, matches / 3)`
+- So if 3+ annotators wrote the same answer and the model matches, it gets full credit
+- This soft voting handles annotator disagreement: a question might have answers like `["nokia", "nokia", "Nokia", "nokia phone", ...]`
+
+**Example**: Model predicts `"Nokia."` → normalized to `"nokia"` → matches 8 of 10 ground truths → score = `min(1, 8/3)` = **1.0**
+
+**Example**: Model predicts `"It's a Nokia phone"` → normalized to `"it's nokia phone"` → matches 0 of 10 → score = **0.0** (even though it's semantically correct)
+
+This is why prompt strategies that produce concise answers score higher — verbose correct answers fail exact matching.
+
+**Final VQA Accuracy** is the mean score across all questions (reported as a percentage).
+
+Secondary metrics (BLEU, METEOR, ROUGE-L, F1) use standard NLP comparison methods that are more forgiving of partial matches, which is why CoT strategies score less badly on those.
+
+### Step 5: Save and analyze results
+
+Each experiment saves to `results/{experiment}/{strategy}/{split}/`:
+- `predictions.json`: every question with the model's answer, raw output, and ground truths
+- `metrics.json`: all computed metric scores
+- `per_category.json`: accuracy broken down by image object category
+
+`scripts/run_analysis.py` reads all results and generates comparison tables, bar charts, heatmaps, per-category breakdowns, and error analysis with qualitative examples.
