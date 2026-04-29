@@ -8,7 +8,7 @@ May 7, 2026
 
 ## Abstract
 
-We evaluate the Qwen2.5-VL-3B-Instruct vision-language model on the TextVQA dataset using six prompt engineering strategies that each ablate a single variable from a shared baseline: OCR-augmented prompting, chain-of-thought (CoT) reasoning, removal of the system prompt, a combined OCR+CoT approach, and an OCR-only ablation (no image). All strategies are evaluated on accuracy, VQA accuracy, BLEU, METEOR, ROUGE-L, F1, precision/recall, and LLM-as-a-judge semantic scoring across the full 5,000-sample validation set. The baseline strategy achieves 82.4% accuracy, with the no-system-prompt and OCR-augmented variants performing comparably (82.2% and 80.5%). Chain-of-thought reasoning dramatically reduces exact-match accuracy to 41.7% despite the LLM judge indicating 78.0% semantic correctness, revealing that *answer format* matters more than *reasoning depth* for exact-match VQA metrics. Per-category analysis identifies Clock/Watch images as a consistent failure mode (64.1% and 65.6% accuracy), driven by the difficulty of reading analog clock hands. LoRA fine-tuning infrastructure is additionally built, and per-category performance breakdowns are reported.
+We evaluate the Qwen2.5-VL-3B-Instruct vision-language model on the TextVQA dataset using six prompt engineering strategies that each ablate a single variable from a shared baseline: OCR-augmented prompting, chain-of-thought (CoT) reasoning, removal of the system prompt, a combined OCR+CoT approach, and an OCR-only ablation (no image). All strategies are evaluated on accuracy, VQA accuracy, BLEU, METEOR, ROUGE-L, F1, precision/recall, and LLM-as-a-judge semantic scoring across the full 5,000-sample validation set. The baseline strategy achieves 82.4% accuracy, with the no-system-prompt and OCR-augmented variants performing comparably (82.2% and 80.5%). Chain-of-thought reasoning dramatically reduces exact-match accuracy to 41.7% despite the LLM judge indicating 78.0% semantic correctness, revealing that *answer format* matters more than *reasoning depth* for exact-match VQA metrics. Per-category analysis identifies Clock/Watch images as a consistent failure mode (64.1% and 65.6% accuracy), driven by the difficulty of reading analog clock hands.
 
 ---
 
@@ -20,7 +20,7 @@ Here, we evaluate Qwen2.5-VL-3B-Instruct (Bai et al., 2023) on the TextVQA datas
 
 The TextVQA evaluation protocol uses exact string matching with answer normalization, which creates a fundamental tension between reasoning depth and answer format. Chain-of-thought prompting encourages richer intermediate reasoning but produces verbose outputs that fail exact matching, even when the model identifies the correct text. This tension is the central theme of our results.
 
-Beyond the prompt engineering comparison, we build LoRA fine-tuning infrastructure to enable parameter-efficient adaptation on the TextVQA training set. All strategies are evaluated with accuracy (primary), VQA accuracy (official), BLEU, METEOR, ROUGE-L, F1, precision/recall, LLM-as-a-judge, and per-category accuracy breakdowns.
+All strategies are evaluated with accuracy (primary), VQA accuracy (official), BLEU, METEOR, ROUGE-L, F1, precision/recall, LLM-as-a-judge, and per-category accuracy breakdowns.
 
 All code is available at: https://github.com/Harlan144/TextVQA_w_Qwen2.5
 
@@ -34,7 +34,7 @@ The TextVQA dataset (Singh et al., 2019) contains 45,336 question-answer pairs a
 
 Each sample provides: the image, a natural language question, 10 human-annotated answers, and pre-extracted OCR tokens detected in the image. The 10 answers per question enable soft evaluation: predictions matching at least 3 of 10 annotated answers receive full credit. The OCR tokens, extracted by Rosetta (Borisyuk et al., 2018), provide noisy but useful text signals that some of our prompt strategies leverage directly.
 
-The test split does not include ground truth answers---evaluation on the test set requires submission to the official TextVQA evaluation server. Accordingly, all metrics in this work are reported on the validation set (5,000 samples). The training split is used only for LoRA fine-tuning.
+The test split does not include ground truth answers---evaluation on the test set requires submission to the official TextVQA evaluation server. Accordingly, all metrics in this work are reported on the validation set (5,000 samples).
 
 <!-- TODO: Add figure showing example TextVQA sample with OCR tokens -->
 
@@ -87,10 +87,6 @@ The key design tension is between reasoning depth and answer conciseness. CoT st
 Both accuracy metrics use the same normalization: lowercase, remove articles ("a", "an", "the") and punctuation, convert number words to digits, expand contractions, and collapse whitespace.
 
 Secondary metrics include: **BLEU** (corpus-level n-gram overlap with smoothing), **METEOR** (alignment-based with synonym matching), **ROUGE-L** (longest common subsequence F-measure), **F1** (token-level precision/recall harmonic mean, best match against any reference), **Precision/Recall** (token-level, reported separately), and **LLM-as-a-Judge** (the model itself scores whether the prediction semantically matches any of the 10 reference answers, evaluated on a 200-sample subset). For per-category analysis, accuracy is broken down by the image object classes provided in the dataset.
-
-### LoRA Fine-Tuning Infrastructure
-
-We additionally implement LoRA (Hu et al., 2022) fine-tuning infrastructure for parameter-efficient adaptation. The configuration targets the query and value projection layers (r=8, alpha=16, dropout 0.05) with AdamW (lr=2e-5). Training formats each sample as a chat conversation with the image, question, and target answer, with input tokens masked from the loss. This infrastructure is built and tested but full training runs are reported separately.
 
 ### Experimental Setup
 
@@ -248,7 +244,7 @@ The no-system-prompt ablation shows nearly identical performance to baseline (82
 
 ### Limitations
 
-Several limitations should be noted. First, only one model (Qwen2.5-VL-3B) is evaluated; a multi-model comparison would strengthen the generality of findings about prompt strategy effectiveness. Second, the 4-bit quantization may reduce model capability relative to full-precision inference, though this is necessary given GPU memory constraints. Third, the prompt strategies are manually designed; automated prompt optimisation (e.g., DSPy or OPRO) could potentially find better formulations. Fourth, CoT strategies use a simple "Answer:" parsing heuristic that may miss correct answers formatted differently. Finally, while LoRA fine-tuning infrastructure is built, full training runs and comparison against prompt engineering would provide a more complete picture.
+Several limitations should be noted. First, only one model (Qwen2.5-VL-3B) is evaluated; a multi-model comparison would strengthen the generality of findings about prompt strategy effectiveness. Second, the 4-bit quantization may reduce model capability relative to full-precision inference, though this is necessary given GPU memory constraints. Third, the prompt strategies are manually designed; automated prompt optimisation (e.g., DSPy or OPRO) could potentially find better formulations. Fourth, CoT strategies use a simple "Answer:" parsing heuristic that may miss correct answers formatted differently.
 
 ---
 
@@ -260,7 +256,7 @@ Per-category analysis reveals that Clock and Watch images are a systematic weak 
 
 The practical takeaway is clear: for exact-match VQA evaluation, answer format matters more than reasoning depth. Constraining output to short, direct answers is more effective than encouraging step-by-step reasoning. This finding is specific to exact-match metrics; the LLM-as-a-judge scores suggest that CoT strategies may perform better when semantic correctness is the criterion.
 
-Future work could explore: (1) hybrid strategies that use CoT reasoning internally but produce concise final answers through a two-stage generation process, (2) LoRA fine-tuning to adapt the model's text reading and answer formatting jointly, (3) automated prompt optimisation to search the strategy space more systematically, and (4) evaluation with additional semantic similarity metrics alongside exact matching to provide a more complete picture of model capability.
+Future work could explore: (1) hybrid strategies that use CoT reasoning internally but produce concise final answers through a two-stage generation process, (2) fine-tuning (e.g., LoRA) to adapt the model's text reading and answer formatting jointly, (3) automated prompt optimisation to search the strategy space more systematically, and (4) evaluation with additional semantic similarity metrics alongside exact matching to provide a more complete picture of model capability.
 
 ---
 
@@ -269,7 +265,6 @@ Future work could explore: (1) hybrid strategies that use CoT reasoning internal
 - Antol, S., et al. (2015). VQA: Visual question answering. *ICCV 2015*.
 - Bai, J., et al. (2023). Qwen-VL: A versatile vision-language model for understanding, localization, text reading, and beyond. *arXiv preprint arXiv:2308.12966*.
 - Borisyuk, F., Gordo, A., & Sivakumar, V. (2018). Rosetta: Large scale system for text detection and recognition in images. *KDD 2018*.
-- Hu, E. J., et al. (2022). LoRA: Low-rank adaptation of large language models. *ICLR 2022*.
 - Li, J., Li, D., Savarese, S., & Hoi, S. (2023). BLIP-2: Bootstrapping language-image pre-training with frozen image encoders and large language models. *ICML 2023*.
 - Liu, H., Li, C., Wu, Q., & Lee, Y. J. (2023). Visual instruction tuning. *NeurIPS 2023*.
 - Singh, A., Natarajan, V., Shah, M., Jiang, Y., Chen, X., Batra, D., Parikh, D., & Rohrbach, M. (2019). Towards VQA models that can read. *CVPR 2019*.
