@@ -2,7 +2,8 @@ data/
 __pycache__/
 *.pyc
 *.pyo
-results/
+results/**/predictions.json
+results/**/per_sample_scores.json
 *.egg-info/
 .eggs/
 dist/

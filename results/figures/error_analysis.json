@@ -1,0 +1,65 @@
+{
+  "baseline": {
+    "total": 5000,
+    "incorrect": 878,
+    "correct": 4122,
+    "error_types": {
+      "wrong_answer": 565,
+      "partial_match": 312,
+      "verbose": 1
+    }
+  },
+  "chain_of_thought": {
+    "total": 5000,
+    "incorrect": 2917,
+    "correct": 2083,
+    "error_types": {
+      "partial_match": 2183,
+      "wrong_answer": 410,
+      "verbose": 307,
+      "no_answer": 17
+    }
+  },
+  "no_system_prompt": {
+    "total": 5000,
+    "incorrect": 890,
+    "correct": 4110,
+    "error_types": {
+      "partial_match": 329,
+      "wrong_answer": 559,
+      "verbose": 2
+    }
+  },
+  "ocr_augmented": {
+    "total": 5000,
+    "incorrect": 975,
+    "correct": 4025,
+    "error_types": {
+      "partial_match": 371,
+      "wrong_answer": 602,
+      "verbose": 2
+    }
+  },
+  "ocr_cot": {
+    "total": 5000,
+    "incorrect": 2635,
+    "correct": 2365,
+    "error_types": {
+      "partial_match": 1845,
+      "wrong_answer": 460,
+      "verbose": 314,
+      "no_answer": 16
+    }
+  },
+  "ocr_only": {
+    "total": 5000,
+    "incorrect": 2946,
+    "correct": 2054,
+    "error_types": {
+      "wrong_answer": 2137,
+      "partial_match": 725,
+      "no_answer": 3,
+      "verbose": 81
+    }
+  }
+}

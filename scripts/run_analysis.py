@@ -58,33 +58,43 @@ def load_all_results(results_dir: Path) -> dict:
 
 
 def plot_accuracy_comparison(experiments: dict, output_dir: Path):
-    """Bar chart comparing VQA accuracy across experiments."""
+    """Grouped bar chart comparing accuracy and VQA accuracy across experiments."""
+    import numpy as np
+
     names = []
-    accuracies = []
+    acc_vals = []
+    vqa_vals = []
     for name, metrics in sorted(experiments.items()):
-        if "vqa_accuracy" in metrics:
-            # Shorten name for display
-            short = name.replace("prompt_eng/", "PE: ").replace("zero_shot/", "ZS: ").replace("finetune/", "FT: ")
+        if "accuracy" in metrics:
+            short = name.replace("prompt_eng/", "").replace("zero_shot/", "ZS: ").replace("finetune/", "FT: ")
             short = short.replace("/validation", "").replace("/test", " (test)")
             names.append(short)
-            accuracies.append(metrics["vqa_accuracy"])
+            acc_vals.append(metrics["accuracy"])
+            vqa_vals.append(metrics.get("vqa_accuracy", 0))
 
     if not names:
         print("No accuracy data found — skipping accuracy plot")
         return
 
-    fig, ax = plt.subplots(figsize=(max(10, len(names) * 1.2), 6))
-    colors = sns.color_palette("viridis", len(names))
-    bars = ax.bar(range(len(names)), accuracies, color=colors)
+    x = np.arange(len(names))
+    width = 0.35
 
-    ax.set_xticks(range(len(names)))
+    fig, ax = plt.subplots(figsize=(max(10, len(names) * 1.5), 6))
+    bars1 = ax.bar(x - width / 2, acc_vals, width, label="Accuracy (match any)", color=sns.color_palette("viridis", 2)[0])
+    bars2 = ax.bar(x + width / 2, vqa_vals, width, label="VQA Accuracy (min(1, n/3))", color=sns.color_palette("viridis", 2)[1])
+
+    ax.set_xticks(x)
     ax.set_xticklabels(names, rotation=45, ha="right", fontsize=9)
-    ax.set_ylabel("VQA Accuracy (%)")
-    ax.set_title("VQA Accuracy Comparison Across Strategies")
+    ax.set_ylabel("Score (%)")
+    ax.set_title("Accuracy Comparison Across Strategies")
+    ax.legend()
 
-    for bar, acc in zip(bars, accuracies):
+    for bar, val in zip(bars1, acc_vals):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.3,
-                f"{acc:.1f}", ha="center", va="bottom", fontsize=8)
+                f"{val:.1f}", ha="center", va="bottom", fontsize=7)
+    for bar, val in zip(bars2, vqa_vals):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.3,
+                f"{val:.1f}", ha="center", va="bottom", fontsize=7)
 
     plt.tight_layout()
     plt.savefig(output_dir / "accuracy_comparison.png", dpi=150)
@@ -94,7 +104,7 @@ def plot_accuracy_comparison(experiments: dict, output_dir: Path):
 
 def plot_metrics_heatmap(experiments: dict, output_dir: Path):
     """Heatmap of all metrics across experiments."""
-    metric_keys = ["vqa_accuracy", "bleu", "meteor", "rouge_l", "f1"]
+    metric_keys = ["accuracy", "vqa_accuracy", "bleu", "meteor", "rouge_l", "f1"]
     available_metrics = set()
     for metrics in experiments.values():
         available_metrics.update(k for k in metrics if k in metric_keys)
@@ -125,114 +135,170 @@ def plot_metrics_heatmap(experiments: dict, output_dir: Path):
     print(f"Saved metrics_heatmap.png")
 
 
+def _classify_errors(predictions: list[dict]) -> dict:
+    """Classify predictions into error types. Returns {type: count}."""
+    from src.utils import vqa_accuracy_score
+
+    error_types = defaultdict(int)
+    total_incorrect = 0
+    for item in predictions:
+        score = vqa_accuracy_score(item["prediction"], item["ground_truths"])
+        if score > 0:
+            continue
+        total_incorrect += 1
+        pred = item["prediction"].lower().strip()
+        gts = [g.lower().strip() for g in item["ground_truths"]]
+        has_overlap = any(pred in gt or gt in pred for gt in gts if gt)
+
+        if not pred or pred in ("", "n/a", "unknown", "i don't know", "cannot determine"):
+            error_types["no_answer"] += 1
+        elif has_overlap:
+            error_types["partial_match"] += 1
+        elif len(pred) > 50:
+            error_types["verbose"] += 1
+        else:
+            error_types["wrong_answer"] += 1
+
+    return dict(error_types), total_incorrect
+
+
 def analyze_errors(results_dir: Path, output_dir: Path):
-    """Analyze error types from prediction files."""
-    # Find all prediction files
+    """Analyze and compare error types across all strategies."""
+    import numpy as np
+
     pred_files = list(results_dir.rglob("predictions.json"))
     if not pred_files:
         print("No prediction files found — skipping error analysis")
         return
 
-    # Use the latest/best prediction file (prefer prompt_eng over zero_shot)
-    pred_files.sort(key=lambda p: ("prompt_eng" in str(p), p.stat().st_mtime))
-    pred_file = pred_files[-1]
-    exp_name = str(pred_file.relative_to(results_dir).parent)
-    print(f"\nError analysis on: {exp_name}")
+    # Collect error breakdown for every strategy
+    all_error_types = set()
+    strategy_errors = {}  # {strategy_name: {error_type: count}}
+    strategy_totals = {}  # {strategy_name: (total, incorrect)}
+    all_summaries = {}
 
-    predictions = load_json(pred_file)
+    for pred_file in sorted(pred_files):
+        exp_name = str(pred_file.relative_to(results_dir).parent)
+        # Extract short strategy name
+        parts = exp_name.split("/")
+        short = parts[1] if len(parts) > 1 else parts[0]
 
-    # Categorize results
-    correct = []
-    incorrect = []
+        predictions = load_json(pred_file)
+        error_counts, n_incorrect = _classify_errors(predictions)
+        all_error_types.update(error_counts.keys())
+        strategy_errors[short] = error_counts
+        strategy_totals[short] = (len(predictions), n_incorrect)
 
-    for item in predictions:
+        all_summaries[short] = {
+            "total": len(predictions),
+            "incorrect": n_incorrect,
+            "correct": len(predictions) - n_incorrect,
+            "error_types": error_counts,
+        }
+
+        print(f"  {short}: {n_incorrect}/{len(predictions)} errors — {error_counts}")
+
+    save_json(all_summaries, output_dir / "error_analysis.json")
+
+    # Save qualitative examples for the best strategy
+    best = _find_best_strategy(results_dir)
+    best_pred_file = results_dir / best / "predictions.json"
+    if best_pred_file.exists():
         from src.utils import vqa_accuracy_score
-        score = vqa_accuracy_score(item["prediction"], item["ground_truths"])
-        item["vqa_score"] = score
-        if score > 0:
-            correct.append(item)
-        else:
-            incorrect.append(item)
+        preds = load_json(best_pred_file)
+        correct = [p for p in preds if vqa_accuracy_score(p["prediction"], p["ground_truths"]) > 0]
+        incorrect = [p for p in preds if vqa_accuracy_score(p["prediction"], p["ground_truths"]) == 0]
+        save_json({
+            "strategy": best,
+            "correct_examples": correct[:5],
+            "incorrect_examples": incorrect[:10],
+        }, output_dir / "qualitative_examples.json")
 
-    print(f"  Correct: {len(correct)} ({100*len(correct)/len(predictions):.1f}%)")
-    print(f"  Incorrect: {len(incorrect)} ({100*len(incorrect)/len(predictions):.1f}%)")
+    # --- Plot: grouped bar chart of error types across strategies ---
+    error_type_order = ["wrong_answer", "partial_match", "verbose", "no_answer"]
+    error_type_order = [e for e in error_type_order if e in all_error_types]
 
-    # Classify error types
-    error_types = defaultdict(list)
-    for item in incorrect:
-        pred = item["prediction"].lower().strip()
-        gts = [g.lower().strip() for g in item["ground_truths"]]
+    strategies = sorted(strategy_errors.keys())
+    x = np.arange(len(strategies))
+    n_types = len(error_type_order)
+    width = 0.8 / max(n_types, 1)
+    colors = sns.color_palette("Set2", n_types)
 
-        # Check if prediction is a substring or superstring of any GT
-        has_overlap = any(pred in gt or gt in pred for gt in gts if gt)
+    fig, ax = plt.subplots(figsize=(max(10, len(strategies) * 1.5), 6))
+    for i, etype in enumerate(error_type_order):
+        counts = [strategy_errors[s].get(etype, 0) for s in strategies]
+        bars = ax.bar(x + i * width, counts, width, label=etype, color=colors[i])
+        for bar, c in zip(bars, counts):
+            if c > 0:
+                ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 5,
+                        str(c), ha="center", va="bottom", fontsize=7)
 
-        if not pred or pred in ("", "n/a", "unknown", "i don't know", "cannot determine"):
-            error_types["no_answer"].append(item)
-        elif has_overlap:
-            error_types["partial_match"].append(item)
-        elif len(pred) > 50:
-            error_types["verbose_response"].append(item)
-        else:
-            error_types["wrong_answer"].append(item)
+    ax.set_xticks(x + width * (n_types - 1) / 2)
+    ax.set_xticklabels(strategies, rotation=45, ha="right", fontsize=9)
+    ax.set_ylabel("Count")
+    ax.set_title("Error Type Comparison Across Strategies")
+    ax.legend(title="Error Type")
+    plt.tight_layout()
+    plt.savefig(output_dir / "error_comparison.png", dpi=150)
+    plt.close()
+    print(f"  Saved error_comparison.png")
 
-    print("\n  Error type breakdown:")
-    for etype, items in sorted(error_types.items(), key=lambda x: -len(x[1])):
-        print(f"    {etype}: {len(items)} ({100*len(items)/len(incorrect):.1f}% of errors)")
+    # --- Plot: stacked bar as percentage of total ---
+    fig, ax = plt.subplots(figsize=(max(10, len(strategies) * 1.5), 6))
+    bottoms = np.zeros(len(strategies))
+    for i, etype in enumerate(error_type_order):
+        pcts = [
+            100.0 * strategy_errors[s].get(etype, 0) / strategy_totals[s][0]
+            for s in strategies
+        ]
+        ax.bar(x, pcts, 0.6, bottom=bottoms, label=etype, color=colors[i])
+        for j, (pct, bot) in enumerate(zip(pcts, bottoms)):
+            if pct > 2:  # only label if visible
+                ax.text(x[j], bot + pct / 2, f"{pct:.0f}%", ha="center", va="center", fontsize=7)
+        bottoms += pcts
 
-    # Save error analysis
-    error_summary = {
-        "experiment": exp_name,
-        "total": len(predictions),
-        "correct": len(correct),
-        "incorrect": len(incorrect),
-        "error_types": {k: len(v) for k, v in error_types.items()},
-    }
-    save_json(error_summary, output_dir / "error_analysis.json")
+    # Add correct on top
+    correct_pcts = [
+        100.0 * (strategy_totals[s][0] - strategy_totals[s][1]) / strategy_totals[s][0]
+        for s in strategies
+    ]
+    ax.bar(x, correct_pcts, 0.6, bottom=bottoms, label="correct", color=sns.color_palette("viridis", 1)[0])
+    for j, (pct, bot) in enumerate(zip(correct_pcts, bottoms)):
+        ax.text(x[j], bot + pct / 2, f"{pct:.0f}%", ha="center", va="center", fontsize=7, color="white")
 
-    # Save qualitative examples
-    examples = {
-        "correct_examples": [
-            {k: v for k, v in item.items() if k != "vqa_score"}
-            for item in correct[:5]
-        ],
-        "incorrect_examples": [
-            {k: v for k, v in item.items() if k != "vqa_score"}
-            for item in incorrect[:10]
-        ],
-    }
-    save_json(examples, output_dir / "qualitative_examples.json")
-    print(f"\n  Saved error_analysis.json and qualitative_examples.json")
+    ax.set_xticks(x)
+    ax.set_xticklabels(strategies, rotation=45, ha="right", fontsize=9)
+    ax.set_ylabel("% of Samples")
+    ax.set_title("Outcome Breakdown by Strategy")
+    ax.legend(title="Outcome", loc="upper right")
+    plt.tight_layout()
+    plt.savefig(output_dir / "error_breakdown_pct.png", dpi=150)
+    plt.close()
+    print(f"  Saved error_breakdown_pct.png")
 
-    # Plot error type distribution
-    if error_types:
-        fig, ax = plt.subplots(figsize=(8, 5))
-        types = list(error_types.keys())
-        counts = [len(error_types[t]) for t in types]
-        colors = sns.color_palette("Set2", len(types))
-        ax.barh(types, counts, color=colors)
-        ax.set_xlabel("Count")
-        ax.set_title(f"Error Type Distribution ({exp_name})")
-        for i, count in enumerate(counts):
-            ax.text(count + 0.5, i, str(count), va="center")
-        plt.tight_layout()
-        plt.savefig(output_dir / "error_distribution.png", dpi=150)
-        plt.close()
-        print(f"  Saved error_distribution.png")
+    return all_summaries
 
-    return error_summary
+
+def _find_best_strategy(results_dir: Path) -> str:
+    """Return the strategy directory name with the highest accuracy."""
+    best_acc, best_name = -1, "baseline"
+    for metrics_file in results_dir.rglob("metrics.json"):
+        metrics = load_json(metrics_file)
+        acc = metrics.get("accuracy", 0)
+        if acc > best_acc:
+            best_acc = acc
+            best_name = str(metrics_file.relative_to(results_dir).parent)
+    return best_name
 
 
 def plot_per_category(results_dir: Path, output_dir: Path):
     """Plot per-category accuracy for the best experiment."""
-    cat_files = list(results_dir.rglob("per_category.json"))
-    if not cat_files:
-        print("No per-category data found — skipping")
+    best = _find_best_strategy(results_dir)
+    cat_file = results_dir / best / "per_category.json"
+    if not cat_file.exists():
+        print(f"No per-category data for best strategy ({best}) — skipping")
         return
-
-    # Pick the best (prefer prompt_eng over zero_shot)
-    cat_files.sort(key=lambda p: ("prompt_eng" in str(p), p.stat().st_mtime))
-    cat_file = cat_files[-1]
-    exp_name = str(cat_file.relative_to(results_dir).parent)
+    exp_name = best
     print(f"\nPer-category analysis on: {exp_name}")
 
     data = load_json(cat_file)
@@ -252,7 +318,7 @@ def plot_per_category(results_dir: Path, output_dir: Path):
     bars = ax1.bar(x, accs, color=sns.color_palette("viridis", len(cats)), alpha=0.8)
     ax1.set_xticks(x)
     ax1.set_xticklabels(cats, rotation=60, ha="right", fontsize=8)
-    ax1.set_ylabel("VQA Accuracy (%)")
+    ax1.set_ylabel("Accuracy (%)")
     ax1.set_title(f"Per-Category Accuracy (top 20 by count) — {exp_name}")
 
     # Overlay count as text
@@ -264,6 +330,40 @@ def plot_per_category(results_dir: Path, output_dir: Path):
     plt.savefig(output_dir / "per_category_accuracy.png", dpi=150)
     plt.close()
     print(f"  Saved per_category_accuracy.png")
+
+
+def plot_llm_judge(experiments: dict, output_dir: Path):
+    """Bar chart of LLM-as-judge scores across strategies."""
+    names = []
+    scores = []
+    for name, metrics in sorted(experiments.items()):
+        if metrics.get("llm_judge") is not None:
+            short = name.replace("prompt_eng/", "").replace("zero_shot/", "ZS: ").replace("finetune/", "FT: ")
+            short = short.replace("/validation", "").replace("/test", " (test)")
+            names.append(short)
+            scores.append(metrics["llm_judge"])
+
+    if not names:
+        print("No LLM judge data found — skipping")
+        return
+
+    fig, ax = plt.subplots(figsize=(max(10, len(names) * 1.5), 6))
+    colors = sns.color_palette("viridis", len(names))
+    bars = ax.bar(range(len(names)), scores, color=colors)
+
+    ax.set_xticks(range(len(names)))
+    ax.set_xticklabels(names, rotation=45, ha="right", fontsize=9)
+    ax.set_ylabel("LLM Judge Score (%)")
+    ax.set_title("LLM-as-Judge Semantic Similarity Across Strategies")
+
+    for bar, s in zip(bars, scores):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.3,
+                f"{s:.1f}", ha="center", va="bottom", fontsize=8)
+
+    plt.tight_layout()
+    plt.savefig(output_dir / "llm_judge.png", dpi=150)
+    plt.close()
+    print(f"Saved llm_judge.png")
 
 
 def save_json(data, path):
@@ -301,6 +401,7 @@ def main():
     print("\nGenerating plots...")
     plot_accuracy_comparison(experiments, output_dir)
     plot_metrics_heatmap(experiments, output_dir)
+    plot_llm_judge(experiments, output_dir)
 
     # Per-category analysis
     print("\nPer-category analysis...")

@@ -5,7 +5,7 @@ from collections import defaultdict
 
 import nltk
 
-from src.utils import vqa_accuracy_score, normalize_answer
+from src.utils import vqa_accuracy_score, vqa_accuracy_score_3, normalize_answer
 
 logger = logging.getLogger(__name__)
 
@@ -21,21 +21,22 @@ except LookupError:
 
 
 def compute_vqa_accuracy(predictions: list[str], ground_truths: list[list[str]]) -> dict:
-    """Compute official VQA accuracy over a list of predictions.
-
-    Args:
-        predictions: List of predicted answer strings.
-        ground_truths: List of lists of ground truth answer strings (10 per question).
+    """Compute both accuracy metrics over a list of predictions.
 
     Returns:
-        Dict with 'vqa_accuracy' (float, 0-100).
+        Dict with 'accuracy' (match any, 0-100) and 'vqa_accuracy' (official min(1, n/3), 0-100).
     """
     scores = [
         vqa_accuracy_score(pred, gts)
         for pred, gts in zip(predictions, ground_truths)
     ]
+    scores_3 = [
+        vqa_accuracy_score_3(pred, gts)
+        for pred, gts in zip(predictions, ground_truths)
+    ]
     return {
-        "vqa_accuracy": 100.0 * sum(scores) / len(scores) if scores else 0.0,
+        "accuracy": 100.0 * sum(scores) / len(scores) if scores else 0.0,
+        "vqa_accuracy": 100.0 * sum(scores_3) / len(scores_3) if scores_3 else 0.0,
         "num_samples": len(scores),
         "per_sample_scores": scores,
     }

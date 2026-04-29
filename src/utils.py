@@ -117,7 +117,13 @@ def normalize_answer(answer: str) -> str:
 
 
 def vqa_accuracy_score(prediction: str, ground_truths: list[str]) -> float:
-    """Compute VQA accuracy for a single prediction against ground truth answers.
+    """Compute accuracy: 1.0 if the prediction matches any ground truth answer."""
+    norm_pred = normalize_answer(prediction)
+    return 1.0 if any(normalize_answer(gt) == norm_pred for gt in ground_truths) else 0.0
+
+
+def vqa_accuracy_score_3(prediction: str, ground_truths: list[str]) -> float:
+    """Compute official VQA accuracy for a single prediction.
 
     Uses official formula: min(1.0, num_matches / 3) where num_matches is
     the count of ground truth answers that match the prediction after normalization.

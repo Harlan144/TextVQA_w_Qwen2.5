@@ -1,0 +1,1504 @@
+{
+  "per_category": {
+    "Person": {
+      "accuracy": 82.29531140657802,
+      "count": 1429
+    },
+    "Clothing": {
+      "accuracy": 80.7570977917981,
+      "count": 951
+    },
+    "Sports uniform": {
+      "accuracy": 81.67613636363636,
+      "count": 704
+    },
+    "Man": {
+      "accuracy": 81.42857142857143,
+      "count": 700
+    },
+    "Bottle": {
+      "accuracy": 78.2546494992847,
+      "count": 699
+    },
+    "Drink": {
+      "accuracy": 79.48328267477204,
+      "count": 658
+    },
+    "Book": {
+      "accuracy": 83.22884012539186,
+      "count": 638
+    },
+    "Poster": {
+      "accuracy": 84.12698412698413,
+      "count": 504
+    },
+    "Sports equipment": {
+      "accuracy": 83.73493975903614,
+      "count": 498
+    },
+    "Vehicle": {
+      "accuracy": 82.62626262626263,
+      "count": 495
+    },
+    "Footwear": {
+      "accuracy": 79.83193277310924,
+      "count": 357
+    },
+    "Woman": {
+      "accuracy": 83.47578347578347,
+      "count": 351
+    },
+    "Boy": {
+      "accuracy": 80.99415204678363,
+      "count": 342
+    },
+    "Beer": {
+      "accuracy": 79.45619335347432,
+      "count": 331
+    },
+    "Car": {
+      "accuracy": 83.10810810810811,
+      "count": 296
+    },
+    "Plant": {
+      "accuracy": 78.89273356401384,
+      "count": 289
+    },
+    "Building": {
+      "accuracy": 77.0909090909091,
+      "count": 275
+    },
+    "Clock": {
+      "accuracy": 61.904761904761905,
+      "count": 273
+    },
+    "Girl": {
+      "accuracy": 79.54545454545455,
+      "count": 264
+    },
+    "Human face": {
+      "accuracy": 79.2156862745098,
+      "count": 255
+    },
+    "Mobile phone": {
+      "accuracy": 84.6774193548387,
+      "count": 248
+    },
+    "Food": {
+      "accuracy": 80.26315789473684,
+      "count": 228
+    },
+    "Wine": {
+      "accuracy": 81.25,
+      "count": 224
+    },
+    "Watch": {
+      "accuracy": 66.04651162790698,
+      "count": 215
+    },
+    "Fashion accessory": {
+      "accuracy": 66.83417085427136,
+      "count": 199
+    },
+    "Laptop": {
+      "accuracy": 76.88442211055276,
+      "count": 199
+    },
+    "Billboard": {
+      "accuracy": 83.93782383419689,
+      "count": 193
+    },
+    "Land vehicle": {
+      "accuracy": 81.34715025906736,
+      "count": 193
+    },
+    "Tree": {
+      "accuracy": 82.79569892473118,
+      "count": 186
+    },
+    "Computer keyboard": {
+      "accuracy": 74.86033519553072,
+      "count": 179
+    },
+    "Computer monitor": {
+      "accuracy": 77.70270270270271,
+      "count": 148
+    },
+    "Furniture": {
+      "accuracy": 75.0,
+      "count": 140
+    },
+    "Kitchen appliance": {
+      "accuracy": 76.08695652173913,
+      "count": 138
+    },
+    "Traffic sign": {
+      "accuracy": 89.47368421052632,
+      "count": 133
+    },
+    "Taxi": {
+      "accuracy": 82.17054263565892,
+      "count": 129
+    },
+    "Tin can": {
+      "accuracy": 86.4,
+      "count": 125
+    },
+    "Box": {
+      "accuracy": 84.42622950819673,
+      "count": 122
+    },
+    "Baseball glove": {
+      "accuracy": 85.21739130434783,
+      "count": 115
+    },
+    "Shelf": {
+      "accuracy": 75.0,
+      "count": 112
+    },
+    "Ball": {
+      "accuracy": 85.71428571428571,
+      "count": 112
+    },
+    "Airplane": {
+      "accuracy": 79.62962962962963,
+      "count": 108
+    },
+    "Vehicle registration plate": {
+      "accuracy": 89.7196261682243,
+      "count": 107
+    },
+    "Convenience store": {
+      "accuracy": 76.6355140186916,
+      "count": 107
+    },
+    "Football": {
+      "accuracy": 81.9047619047619,
+      "count": 105
+    },
+    "Table": {
+      "accuracy": 83.49514563106796,
+      "count": 103
+    },
+    "Television": {
+      "accuracy": 88.23529411764706,
+      "count": 102
+    },
+    "Wall clock": {
+      "accuracy": 52.747252747252745,
+      "count": 91
+    },
+    "Bus": {
+      "accuracy": 85.55555555555556,
+      "count": 90
+    },
+    "Aircraft": {
+      "accuracy": 76.40449438202248,
+      "count": 89
+    },
+    "Coin": {
+      "accuracy": 75.0,
+      "count": 80
+    },
+    "Wheel": {
+      "accuracy": 82.27848101265823,
+      "count": 79
+    },
+    "Office supplies": {
+      "accuracy": 70.51282051282051,
+      "count": 78
+    },
+    "Telephone": {
+      "accuracy": 86.95652173913044,
+      "count": 69
+    },
+    "Snack": {
+      "accuracy": 86.95652173913044,
+      "count": 69
+    },
+    "Bookcase": {
+      "accuracy": 67.6923076923077,
+      "count": 65
+    },
+    "Train": {
+      "accuracy": 84.61538461538461,
+      "count": 65
+    },
+    "Bicycle": {
+      "accuracy": 84.375,
+      "count": 64
+    },
+    "Scoreboard": {
+      "accuracy": 78.125,
+      "count": 64
+    },
+    "Baseball bat": {
+      "accuracy": 79.6875,
+      "count": 64
+    },
+    "Home appliance": {
+      "accuracy": 74.19354838709677,
+      "count": 62
+    },
+    "Waste container": {
+      "accuracy": 91.93548387096774,
+      "count": 62
+    },
+    "Stop sign": {
+      "accuracy": 95.16129032258064,
+      "count": 62
+    },
+    "Perfume": {
+      "accuracy": 77.58620689655173,
+      "count": 58
+    },
+    "Glove": {
+      "accuracy": 84.48275862068965,
+      "count": 58
+    },
+    "Whiteboard": {
+      "accuracy": 84.21052631578948,
+      "count": 57
+    },
+    "Desk": {
+      "accuracy": 75.0,
+      "count": 56
+    },
+    "Auto part": {
+      "accuracy": 78.18181818181819,
+      "count": 55
+    },
+    "Van": {
+      "accuracy": 85.18518518518519,
+      "count": 54
+    },
+    "Remote control": {
+      "accuracy": 75.47169811320755,
+      "count": 53
+    },
+    "Toy": {
+      "accuracy": 75.47169811320755,
+      "count": 53
+    },
+    "Shorts": {
+      "accuracy": 90.38461538461539,
+      "count": 52
+    },
+    "Window": {
+      "accuracy": 71.15384615384616,
+      "count": 52
+    },
+    "Tableware": {
+      "accuracy": 82.0,
+      "count": 50
+    },
+    "Picture frame": {
+      "accuracy": 82.6086956521739,
+      "count": 46
+    },
+    "Digital clock": {
+      "accuracy": 81.3953488372093,
+      "count": 43
+    },
+    "Calculator": {
+      "accuracy": 76.74418604651163,
+      "count": 43
+    },
+    "Mammal": {
+      "accuracy": 81.3953488372093,
+      "count": 43
+    },
+    "Fast food": {
+      "accuracy": 74.4186046511628,
+      "count": 43
+    },
+    "Hat": {
+      "accuracy": 90.69767441860465,
+      "count": 43
+    },
+    "House": {
+      "accuracy": 85.36585365853658,
+      "count": 41
+    },
+    "Human hair": {
+      "accuracy": 84.61538461538461,
+      "count": 39
+    },
+    "Shirt": {
+      "accuracy": 84.61538461538461,
+      "count": 39
+    },
+    "Ruler": {
+      "accuracy": 75.0,
+      "count": 36
+    },
+    "Door": {
+      "accuracy": 82.85714285714286,
+      "count": 35
+    },
+    "Cocktail": {
+      "accuracy": 84.84848484848484,
+      "count": 33
+    },
+    "Watercraft": {
+      "accuracy": 84.84848484848484,
+      "count": 33
+    },
+    "Envelope": {
+      "accuracy": 65.625,
+      "count": 32
+    },
+    "Human arm": {
+      "accuracy": 71.875,
+      "count": 32
+    },
+    "Beaker": {
+      "accuracy": 70.96774193548387,
+      "count": 31
+    },
+    "Mug": {
+      "accuracy": 86.66666666666667,
+      "count": 30
+    },
+    "Boat": {
+      "accuracy": 83.33333333333333,
+      "count": 30
+    },
+    "Traffic light": {
+      "accuracy": 68.96551724137932,
+      "count": 29
+    },
+    "Alarm clock": {
+      "accuracy": 57.142857142857146,
+      "count": 28
+    },
+    "Skyscraper": {
+      "accuracy": 85.18518518518519,
+      "count": 27
+    },
+    "Human head": {
+      "accuracy": 81.48148148148148,
+      "count": 27
+    },
+    "Trousers": {
+      "accuracy": 81.48148148148148,
+      "count": 27
+    },
+    "Jeans": {
+      "accuracy": 55.55555555555556,
+      "count": 27
+    },
+    "Juice": {
+      "accuracy": 85.18518518518519,
+      "count": 27
+    },
+    "Sink": {
+      "accuracy": 76.92307692307692,
+      "count": 26
+    },
+    "Cabinetry": {
+      "accuracy": 96.15384615384616,
+      "count": 26
+    },
+    "Flower": {
+      "accuracy": 84.0,
+      "count": 25
+    },
+    "Parking meter": {
+      "accuracy": 70.83333333333333,
+      "count": 24
+    },
+    "Blender": {
+      "accuracy": 75.0,
+      "count": 24
+    },
+    "Dress": {
+      "accuracy": 82.6086956521739,
+      "count": 23
+    },
+    "Human body": {
+      "accuracy": 78.26086956521739,
+      "count": 23
+    },
+    "Flag": {
+      "accuracy": 90.9090909090909,
+      "count": 22
+    },
+    "Jacket": {
+      "accuracy": 86.36363636363636,
+      "count": 22
+    },
+    "Refrigerator": {
+      "accuracy": 66.66666666666667,
+      "count": 21
+    },
+    "Office building": {
+      "accuracy": 80.95238095238095,
+      "count": 21
+    },
+    "Measuring cup": {
+      "accuracy": 75.0,
+      "count": 20
+    },
+    "Food processor": {
+      "accuracy": 75.0,
+      "count": 20
+    },
+    "Coffee cup": {
+      "accuracy": 78.94736842105263,
+      "count": 19
+    },
+    "Ambulance": {
+      "accuracy": 100.0,
+      "count": 18
+    },
+    "Coffeemaker": {
+      "accuracy": 77.77777777777777,
+      "count": 18
+    },
+    "Chair": {
+      "accuracy": 83.33333333333333,
+      "count": 18
+    },
+    "Cream": {
+      "accuracy": 77.77777777777777,
+      "count": 18
+    },
+    "Bird": {
+      "accuracy": 64.70588235294117,
+      "count": 17
+    },
+    "Helicopter": {
+      "accuracy": 93.75,
+      "count": 16
+    },
+    "Tool": {
+      "accuracy": 62.5,
+      "count": 16
+    },
+    "Scale": {
+      "accuracy": 66.66666666666667,
+      "count": 15
+    },
+    "Horse": {
+      "accuracy": 80.0,
+      "count": 15
+    },
+    "Candle": {
+      "accuracy": 60.0,
+      "count": 15
+    },
+    "Pressure cooker": {
+      "accuracy": 86.66666666666667,
+      "count": 15
+    },
+    "Suit": {
+      "accuracy": 73.33333333333333,
+      "count": 15
+    },
+    "Bicycle wheel": {
+      "accuracy": 78.57142857142857,
+      "count": 14
+    },
+    "Motorcycle": {
+      "accuracy": 92.85714285714286,
+      "count": 14
+    },
+    "Tower": {
+      "accuracy": 42.857142857142854,
+      "count": 14
+    },
+    "Headphones": {
+      "accuracy": 71.42857142857143,
+      "count": 14
+    },
+    "Fire hydrant": {
+      "accuracy": 100.0,
+      "count": 14
+    },
+    "Pitcher": {
+      "accuracy": 78.57142857142857,
+      "count": 14
+    },
+    "Tire": {
+      "accuracy": 71.42857142857143,
+      "count": 14
+    },
+    "Cosmetics": {
+      "accuracy": 69.23076923076923,
+      "count": 13
+    },
+    "Musical instrument": {
+      "accuracy": 100.0,
+      "count": 12
+    },
+    "Bed": {
+      "accuracy": 83.33333333333333,
+      "count": 12
+    },
+    "Mixer": {
+      "accuracy": 75.0,
+      "count": 12
+    },
+    "Slow cooker": {
+      "accuracy": 75.0,
+      "count": 12
+    },
+    "Computer mouse": {
+      "accuracy": 54.54545454545455,
+      "count": 11
+    },
+    "Mirror": {
+      "accuracy": 72.72727272727273,
+      "count": 11
+    },
+    "Personal care": {
+      "accuracy": 72.72727272727273,
+      "count": 11
+    },
+    "Balloon": {
+      "accuracy": 90.9090909090909,
+      "count": 11
+    },
+    "Camera": {
+      "accuracy": 80.0,
+      "count": 10
+    },
+    "Ipod": {
+      "accuracy": 80.0,
+      "count": 10
+    },
+    "Countertop": {
+      "accuracy": 100.0,
+      "count": 10
+    },
+    "Hair spray": {
+      "accuracy": 70.0,
+      "count": 10
+    },
+    "Human eye": {
+      "accuracy": 60.0,
+      "count": 10
+    },
+    "Wine rack": {
+      "accuracy": 70.0,
+      "count": 10
+    },
+    "Skateboard": {
+      "accuracy": 70.0,
+      "count": 10
+    },
+    "Barrel": {
+      "accuracy": 88.88888888888889,
+      "count": 9
+    },
+    "Human leg": {
+      "accuracy": 88.88888888888889,
+      "count": 9
+    },
+    "Couch": {
+      "accuracy": 88.88888888888889,
+      "count": 9
+    },
+    "Microwave oven": {
+      "accuracy": 77.77777777777777,
+      "count": 9
+    },
+    "Tank": {
+      "accuracy": 88.88888888888889,
+      "count": 9
+    },
+    "Cat": {
+      "accuracy": 100.0,
+      "count": 9
+    },
+    "Medical equipment": {
+      "accuracy": 100.0,
+      "count": 8
+    },
+    "Surfboard": {
+      "accuracy": 87.5,
+      "count": 8
+    },
+    "Drum": {
+      "accuracy": 100.0,
+      "count": 8
+    },
+    "Kettle": {
+      "accuracy": 75.0,
+      "count": 8
+    },
+    "Snowman": {
+      "accuracy": 87.5,
+      "count": 8
+    },
+    "Christmas tree": {
+      "accuracy": 87.5,
+      "count": 8
+    },
+    "Oven": {
+      "accuracy": 87.5,
+      "count": 8
+    },
+    "Volleyball": {
+      "accuracy": 87.5,
+      "count": 8
+    },
+    "Hot dog": {
+      "accuracy": 75.0,
+      "count": 8
+    },
+    "Toaster": {
+      "accuracy": 75.0,
+      "count": 8
+    },
+    "Kitchen utensil": {
+      "accuracy": 75.0,
+      "count": 8
+    },
+    "Cart": {
+      "accuracy": 100.0,
+      "count": 8
+    },
+    "Fruit": {
+      "accuracy": 87.5,
+      "count": 8
+    },
+    "Saucer": {
+      "accuracy": 75.0,
+      "count": 8
+    },
+    "Cassette deck": {
+      "accuracy": 100.0,
+      "count": 7
+    },
+    "Printer": {
+      "accuracy": 85.71428571428571,
+      "count": 7
+    },
+    "Dessert": {
+      "accuracy": 85.71428571428571,
+      "count": 7
+    },
+    "Sunglasses": {
+      "accuracy": 100.0,
+      "count": 7
+    },
+    "Vegetable": {
+      "accuracy": 71.42857142857143,
+      "count": 7
+    },
+    "Stairs": {
+      "accuracy": 42.857142857142854,
+      "count": 7
+    },
+    "Jaguar": {
+      "accuracy": 57.142857142857146,
+      "count": 7
+    },
+    "Rocket": {
+      "accuracy": 71.42857142857143,
+      "count": 7
+    },
+    "Truck": {
+      "accuracy": 100.0,
+      "count": 7
+    },
+    "Closet": {
+      "accuracy": 71.42857142857143,
+      "count": 7
+    },
+    "Dairy": {
+      "accuracy": 100.0,
+      "count": 7
+    },
+    "Sculpture": {
+      "accuracy": 57.142857142857146,
+      "count": 7
+    },
+    "Coffee": {
+      "accuracy": 71.42857142857143,
+      "count": 7
+    },
+    "Street light": {
+      "accuracy": 71.42857142857143,
+      "count": 7
+    },
+    "Limousine": {
+      "accuracy": 100.0,
+      "count": 6
+    },
+    "Human mouth": {
+      "accuracy": 50.0,
+      "count": 6
+    },
+    "Heater": {
+      "accuracy": 83.33333333333333,
+      "count": 6
+    },
+    "Belt": {
+      "accuracy": 33.333333333333336,
+      "count": 6
+    },
+    "Wok": {
+      "accuracy": 100.0,
+      "count": 6
+    },
+    "Face powder": {
+      "accuracy": 83.33333333333333,
+      "count": 6
+    },
+    "Tablet computer": {
+      "accuracy": 66.66666666666667,
+      "count": 6
+    },
+    "High heels": {
+      "accuracy": 16.666666666666668,
+      "count": 6
+    },
+    "Football helmet": {
+      "accuracy": 83.33333333333333,
+      "count": 6
+    },
+    "Gas stove": {
+      "accuracy": 83.33333333333333,
+      "count": 6
+    },
+    "Sofa bed": {
+      "accuracy": 80.0,
+      "count": 5
+    },
+    "Racket": {
+      "accuracy": 100.0,
+      "count": 5
+    },
+    "Studio couch": {
+      "accuracy": 100.0,
+      "count": 5
+    },
+    "Mixing bowl": {
+      "accuracy": 80.0,
+      "count": 5
+    },
+    "Bat": {
+      "accuracy": 60.0,
+      "count": 5
+    },
+    "Waffle iron": {
+      "accuracy": 80.0,
+      "count": 5
+    },
+    "Ladder": {
+      "accuracy": 100.0,
+      "count": 5
+    },
+    "Salt and pepper shakers": {
+      "accuracy": 100.0,
+      "count": 5
+    },
+    "Cocktail shaker": {
+      "accuracy": 80.0,
+      "count": 5
+    },
+    "Bicycle helmet": {
+      "accuracy": 80.0,
+      "count": 5
+    },
+    "Milk": {
+      "accuracy": 60.0,
+      "count": 5
+    },
+    "Paper towel": {
+      "accuracy": 60.0,
+      "count": 5
+    },
+    "Light switch": {
+      "accuracy": 75.0,
+      "count": 4
+    },
+    "Bottle opener": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Lantern": {
+      "accuracy": 25.0,
+      "count": 4
+    },
+    "Starfish": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Bowl": {
+      "accuracy": 75.0,
+      "count": 4
+    },
+    "Washing machine": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Humidifier": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Necklace": {
+      "accuracy": 75.0,
+      "count": 4
+    },
+    "Container": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Cooking spray": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Pear": {
+      "accuracy": 75.0,
+      "count": 4
+    },
+    "Grape": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Goggles": {
+      "accuracy": 75.0,
+      "count": 4
+    },
+    "Palm tree": {
+      "accuracy": 75.0,
+      "count": 4
+    },
+    "Paddle": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Rose": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Dog": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Ring binder": {
+      "accuracy": 50.0,
+      "count": 4
+    },
+    "Human nose": {
+      "accuracy": 50.0,
+      "count": 4
+    },
+    "Suitcase": {
+      "accuracy": 50.0,
+      "count": 4
+    },
+    "Infant bed": {
+      "accuracy": 75.0,
+      "count": 4
+    },
+    "Chest of drawers": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Stretcher": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Drawer": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Apple": {
+      "accuracy": 75.0,
+      "count": 4
+    },
+    "Spoon": {
+      "accuracy": 75.0,
+      "count": 4
+    },
+    "Butterfly": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Backpack": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Microphone": {
+      "accuracy": 50.0,
+      "count": 4
+    },
+    "Jug": {
+      "accuracy": 75.0,
+      "count": 4
+    },
+    "Vase": {
+      "accuracy": 100.0,
+      "count": 4
+    },
+    "Hair dryer": {
+      "accuracy": 75.0,
+      "count": 4
+    },
+    "Coffee table": {
+      "accuracy": 33.333333333333336,
+      "count": 3
+    },
+    "Giraffe": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Platter": {
+      "accuracy": 66.66666666666667,
+      "count": 3
+    },
+    "Tent": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Egg": {
+      "accuracy": 66.66666666666667,
+      "count": 3
+    },
+    "Door handle": {
+      "accuracy": 33.333333333333336,
+      "count": 3
+    },
+    "Table tennis racket": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Piano": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Lighthouse": {
+      "accuracy": 33.333333333333336,
+      "count": 3
+    },
+    "Baked goods": {
+      "accuracy": 66.66666666666667,
+      "count": 3
+    },
+    "Pen": {
+      "accuracy": 66.66666666666667,
+      "count": 3
+    },
+    "Handbag": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Cupboard": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Seat belt": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Wardrobe": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Jacuzzi": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Bench": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Whisk": {
+      "accuracy": 66.66666666666667,
+      "count": 3
+    },
+    "Rabbit": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Tie": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Cookie": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Bronze sculpture": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Flashlight": {
+      "accuracy": 66.66666666666667,
+      "count": 3
+    },
+    "Curtain": {
+      "accuracy": 66.66666666666667,
+      "count": 3
+    },
+    "Sandal": {
+      "accuracy": 33.333333333333336,
+      "count": 3
+    },
+    "Sock": {
+      "accuracy": 100.0,
+      "count": 3
+    },
+    "Doll": {
+      "accuracy": 66.66666666666667,
+      "count": 3
+    },
+    "Shower": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Plumbing fixture": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Bathroom accessory": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Pencil case": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Segway": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Pancake": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Fireplace": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Hiking equipment": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Radish": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Worm": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Tea": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Bidet": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Toilet": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Lipstick": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Swimwear": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Coat": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Trumpet": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Banjo": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Cricket ball": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Swim cap": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Crutch": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Bread": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Power plugs and sockets": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Stethoscope": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Ratchet": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Sewing machine": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Boot": {
+      "accuracy": 0.0,
+      "count": 2
+    },
+    "Shark": {
+      "accuracy": 0.0,
+      "count": 2
+    },
+    "Human hand": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Skull": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Fax": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Diaper": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Cake": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Candy": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Mechanical fan": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Picnic basket": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Taco": {
+      "accuracy": 0.0,
+      "count": 2
+    },
+    "Fountain": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Screwdriver": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Stapler": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Eraser": {
+      "accuracy": 0.0,
+      "count": 2
+    },
+    "Ladle": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Houseplant": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Nightstand": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Filing cabinet": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Popcorn": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Bomb": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Sun hat": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Weapon": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Towel": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Porch": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Plate": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Dinosaur": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Bear": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Duck": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Elephant": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Honeycomb": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Band-aid": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Brown bear": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Pumpkin": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Squash": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Pastry": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Marine invertebrates": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Invertebrate": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Muffin": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Frying pan": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Toilet paper": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Teapot": {
+      "accuracy": 50.0,
+      "count": 2
+    },
+    "Snowplow": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Roller skates": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Wood-burning stove": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Golf ball": {
+      "accuracy": 100.0,
+      "count": 2
+    },
+    "Cowboy hat": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Monkey": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Golf cart": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Salad": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Penguin": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Common fig": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Knife": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Wrench": {
+      "accuracy": 0.0,
+      "count": 1
+    },
+    "Musical keyboard": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Barge": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Submarine": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Carnivore": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Hamster": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Billiard table": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Mouse": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Pig": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Dog bed": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Cat furniture": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Facial tissue holder": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Gondola": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Miniskirt": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Flowerpot": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Blue jay": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Tap": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Burrito": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Human beard": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Goldfish": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Fish": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Guitar": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Corded phone": {
+      "accuracy": 0.0,
+      "count": 1
+    },
+    "Umbrella": {
+      "accuracy": 0.0,
+      "count": 1
+    },
+    "Animal": {
+      "accuracy": 0.0,
+      "count": 1
+    },
+    "Missile": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Bust": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Bathroom cabinet": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Nail": {
+      "accuracy": 100.0,
+      "count": 1
+    },
+    "Seafood": {
+      "accuracy": 0.0,
+      "count": 1
+    },
+    "Earrings": {
+      "accuracy": 0.0,
+      "count": 1
+    },
+    "Skirt": {
+      "accuracy": 0.0,
+      "count": 1
+    },
+    "Syringe": {
+      "accuracy": 0.0,
+      "count": 1
+    },
+    "Scissors": {
+      "accuracy": 100.0,
+      "count": 1
+    }
+  }
+}

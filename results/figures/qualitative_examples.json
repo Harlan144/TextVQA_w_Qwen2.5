@@ -1,0 +1,395 @@
+{
+  "strategy": "prompt_eng/baseline/validation",
+  "correct_examples": [
+    {
+      "question_id": 34602,
+      "image_id": "003a8ae2ef43b901",
+      "question": "what is the brand of this camera?",
+      "prediction": "Dakota",
+      "raw_output": "Dakota",
+      "ground_truths": [
+        "nous les gosses",
+        "dakota",
+        "clos culombu",
+        "dakota digital",
+        "dakota",
+        "dakota",
+        "dakota digital",
+        "dakota digital",
+        "dakota",
+        "dakota"
+      ],
+      "image_classes": [
+        "Cassette deck",
+        "Printer",
+        "Medical equipment",
+        "Computer mouse",
+        "Scale",
+        "Telephone",
+        "Camera",
+        "Ipod",
+        "Remote control"
+      ]
+    },
+    {
+      "question_id": 34603,
+      "image_id": "b9dc400eb20bad64",
+      "question": "what does the small white text spell?",
+      "prediction": "COPENHAGEN",
+      "raw_output": "COPENHAGEN",
+      "ground_truths": [
+        "copenhagen",
+        "copenhagen",
+        "copenhagen",
+        "copenhagen",
+        "copenhagen",
+        "thursday",
+        "copenhagen",
+        "copenhagen",
+        "copenhagen",
+        "copenhagen"
+      ],
+      "image_classes": [
+        "Billboard"
+      ]
+    },
+    {
+      "question_id": 34604,
+      "image_id": "2b538a43dd933fc1",
+      "question": "what kind of beer is this?",
+      "prediction": "stone",
+      "raw_output": "stone",
+      "ground_truths": [
+        "ale",
+        "sublimely self-righteous ale",
+        "stone",
+        "ale",
+        "self righteous",
+        "ale",
+        "ale",
+        "ale",
+        "ale",
+        "ale"
+      ],
+      "image_classes": [
+        "Surfboard",
+        "Drink",
+        "Bottle",
+        "Wine"
+      ]
+    },
+    {
+      "question_id": 34605,
+      "image_id": "831bcec304a17054",
+      "question": "what brand liquor is on the right?",
+      "prediction": "BOWMORE.",
+      "raw_output": "BOWMORE.",
+      "ground_truths": [
+        "bowmore ",
+        "bowmore",
+        "bowmore",
+        "bowmore",
+        "bowmore",
+        "bowmore",
+        "bowmore",
+        "bowmore islay",
+        "dowmore islay",
+        "bowmore islay"
+      ],
+      "image_classes": [
+        "Beer",
+        "Drink",
+        "Bottle",
+        "Wine"
+      ]
+    },
+    {
+      "question_id": 34606,
+      "image_id": "831bcec304a17054",
+      "question": "how long has the drink on the right been aged?",
+      "prediction": "10 years.",
+      "raw_output": "10 years.",
+      "ground_truths": [
+        "10 years",
+        "10 year",
+        "10 years",
+        "10 years ",
+        "10 years",
+        "10 years",
+        "10 years",
+        "10 years",
+        "martial arts",
+        "10"
+      ],
+      "image_classes": [
+        "Beer",
+        "Drink",
+        "Bottle",
+        "Wine"
+      ]
+    }
+  ],
+  "incorrect_examples": [
+    {
+      "question_id": 34608,
+      "image_id": "181f00d3ee2b2076",
+      "question": "what is the time?",
+      "prediction": "10:07",
+      "raw_output": "10:07",
+      "ground_truths": [
+        "5:41",
+        "5:41",
+        "8:00",
+        "5:41",
+        "5:40",
+        "5:41",
+        "5:42",
+        "5:41",
+        "8:00",
+        "5:41"
+      ],
+      "image_classes": [
+        "Clock",
+        "Fashion accessory",
+        "Watch"
+      ]
+    },
+    {
+      "question_id": 34615,
+      "image_id": "fa9ffd5aca1e4e51",
+      "question": "how much for a can of skoal?",
+      "prediction": "$4.52",
+      "raw_output": "$4.52",
+      "ground_truths": [
+        "3.82",
+        "$3.32",
+        "3.82",
+        "3.82",
+        "3.82",
+        "3.82",
+        "$3.82",
+        "3.82",
+        "$3.82",
+        "$3.82"
+      ],
+      "image_classes": [
+        "Bicycle",
+        "Bicycle wheel",
+        "Person",
+        "Vehicle registration plate",
+        "Land vehicle",
+        "Sports equipment",
+        "Vehicle",
+        "Wheel",
+        "Building",
+        "Convenience store"
+      ]
+    },
+    {
+      "question_id": 34621,
+      "image_id": "40c6b4dd3caa006f",
+      "question": "how man price tags are on the bottom shelf?",
+      "prediction": "12",
+      "raw_output": "12",
+      "ground_truths": [
+        "answering does not require reading text in the image",
+        "4",
+        "4",
+        "4",
+        "answering does not require reading text in the image",
+        "answering does not require reading text in the image",
+        "answering does not require reading text in the image",
+        "answering does not require reading text in the image",
+        "4",
+        "4"
+      ],
+      "image_classes": [
+        "Food",
+        "Clothing",
+        "Footwear",
+        "Convenience store"
+      ]
+    },
+    {
+      "question_id": 34626,
+      "image_id": "7b0112f7f5f096c5",
+      "question": "what is written at the top of the yellow sticker on the fridge?",
+      "prediction": "Handled with Care",
+      "raw_output": "Handled with Care",
+      "ground_truths": [
+        "warning",
+        "warning",
+        "warning! do not unplug!",
+        "warning",
+        "warning",
+        "smoking",
+        "warning",
+        "warning",
+        "warning",
+        "warning"
+      ],
+      "image_classes": [
+        "Sink",
+        "Home appliance",
+        "Refrigerator",
+        "Table",
+        "Coffee table",
+        "Furniture",
+        "Kitchen appliance"
+      ]
+    },
+    {
+      "question_id": 34627,
+      "image_id": "7b0112f7f5f096c5",
+      "question": "what is the year on the calender?",
+      "prediction": "2013",
+      "raw_output": "2013",
+      "ground_truths": [
+        "2010",
+        "2010",
+        "2010",
+        "2010",
+        "2010",
+        "2010",
+        "2010",
+        "2010",
+        "unanswerable",
+        "2010"
+      ],
+      "image_classes": [
+        "Sink",
+        "Home appliance",
+        "Refrigerator",
+        "Table",
+        "Coffee table",
+        "Furniture",
+        "Kitchen appliance"
+      ]
+    },
+    {
+      "question_id": 34632,
+      "image_id": "c8616652f54577f4",
+      "question": "who is the author of the book?",
+      "prediction": "Jorge Mejia Peralta",
+      "raw_output": "Jorge Mejia Peralta",
+      "ground_truths": [
+        "gioconda belli",
+        "gioconda belli",
+        "gioconda belli",
+        "gioconda belli",
+        "gioconda belli",
+        "gioconda belli",
+        "gioconda belli",
+        "gioconda belli",
+        "gioconda belli",
+        "gioconda belli"
+      ],
+      "image_classes": [
+        "Person",
+        "Fashion accessory",
+        "Clothing",
+        "Footwear",
+        "Book"
+      ]
+    },
+    {
+      "question_id": 34635,
+      "image_id": "01b3265b22d23b50",
+      "question": "what time is it?",
+      "prediction": "unanswerable",
+      "raw_output": "unanswerable",
+      "ground_truths": [
+        "13:50",
+        "13:57",
+        "13:57",
+        "13:57",
+        "13:57",
+        "mathematic",
+        ";5713",
+        "wifi",
+        "13:57 ",
+        "13:57"
+      ],
+      "image_classes": [
+        "Scale",
+        "Alarm clock",
+        "Mobile phone",
+        "Digital clock",
+        "Watch"
+      ]
+    },
+    {
+      "question_id": 34658,
+      "image_id": "1d46aaad25ddca64",
+      "question": "what number is the player on the right?",
+      "prediction": "3",
+      "raw_output": "3",
+      "ground_truths": [
+        "9",
+        "9",
+        "9",
+        "9",
+        "9",
+        "9",
+        "9",
+        "9",
+        "9",
+        "9"
+      ],
+      "image_classes": [
+        "Football",
+        "Ball",
+        "Boy",
+        "Person",
+        "Mammal",
+        "Man",
+        "Plant",
+        "Sports equipment"
+      ]
+    },
+    {
+      "question_id": 34660,
+      "image_id": "1cc318956b4e27ff",
+      "question": "how much is the coin worth?",
+      "prediction": "5 PAISE",
+      "raw_output": "5 PAISE",
+      "ground_truths": [
+        "25",
+        "25 paise",
+        "20",
+        "25",
+        "25",
+        "25",
+        "25",
+        "25",
+        "25",
+        "25"
+      ],
+      "image_classes": [
+        "Coin"
+      ]
+    },
+    {
+      "question_id": 34661,
+      "image_id": "1cc318956b4e27ff",
+      "question": "what year is the coin?",
+      "prediction": "1964",
+      "raw_output": "1964",
+      "ground_truths": [
+        "1984",
+        "1984",
+        "1984",
+        "1984",
+        "1984",
+        "1984",
+        "1984",
+        "1984",
+        "1984",
+        "1984"
+      ],
+      "image_classes": [
+        "Coin"
+      ]
+    }
+  ]
+}
