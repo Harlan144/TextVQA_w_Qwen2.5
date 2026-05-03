@@ -1,0 +1,10 @@
+Strategy	System Prompt	OCR Tokens	CoT	Image	Other	Description
+Baseline	Yes	No	No	Yes	—	System prompt + image + question + concise instruction
+OCR-Augmented	Yes	+	No	Yes	—	Adds detected OCR tokens to the prompt
+Chain-of-Thought	Yes	No	+	Yes	—	Replaces concise instruction with step-by-step reasoning
+No-System-Prompt	Removed	No	No	Yes	—	Baseline without the system prompt
+OCR + CoT	Yes	+	+	Yes	—	Adds both OCR tokens and CoT instruction
+OCR-Only	Yes	+	No	Removed	—	OCR tokens without the image (ablation)
+Few-Shot	Yes	No	No	Yes	+ 2 demos	Two training-set examples as prior conversation turns
+Format Constraint	Yes	No	No	Yes	+ length rule	Explicit "1 to 3 words only" instruction
+Think Hard	Yes	No	No	Yes	+ emphasis	"Look very carefully" + "think hard" instruction
