@@ -5010,6 +5010,6 @@
   "f1": 67.46434838379412,
   "precision": 65.50022556212866,
   "recall": 83.05584176934177,
-  "llm_judge": 78.0,
-  "llm_judge_n_samples": 200
+  "llm_judge": 79.82000000000001,
+  "llm_judge_n_samples": 5000
 }

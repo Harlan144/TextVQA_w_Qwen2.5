@@ -9,8 +9,8 @@
     "f1": 86.80690156875434,
     "precision": 86.88346139971141,
     "recall": 87.62088183859153,
-    "llm_judge": 84.5,
-    "llm_judge_n_samples": 200
+    "llm_judge": 85.56,
+    "llm_judge_n_samples": 5000
   },
   "prompt_eng/chain_of_thought/validation": {
     "accuracy": 52.0,
@@ -5024,8 +5024,8 @@
     "f1": 64.12546605766383,
     "precision": 61.11498110281832,
     "recall": 84.53394444444444,
-    "llm_judge": 78.0,
-    "llm_judge_n_samples": 200
+    "llm_judge": 80.47999999999999,
+    "llm_judge_n_samples": 5000
   },
   "prompt_eng/few_shot/validation": {
     "accuracy": 82.1,
@@ -5037,8 +5037,8 @@
     "f1": 85.97939589358012,
     "precision": 86.40366848940533,
     "recall": 86.3041111111111,
-    "llm_judge": 83.5,
-    "llm_judge_n_samples": 200
+    "llm_judge": 84.84,
+    "llm_judge_n_samples": 5000
   },
   "prompt_eng/format_constraint/validation": {
     "accuracy": 82.38,
@@ -5050,8 +5050,8 @@
     "f1": 86.47942952661373,
     "precision": 86.6499761904762,
     "recall": 87.09284126984127,
-    "llm_judge": 85.5,
-    "llm_judge_n_samples": 200
+    "llm_judge": 84.68,
+    "llm_judge_n_samples": 5000
   },
   "prompt_eng/no_system_prompt/validation": {
     "accuracy": 82.2,
@@ -5063,8 +5063,8 @@
     "f1": 86.59497156258288,
     "precision": 86.66477290764792,
     "recall": 87.49589301874596,
-    "llm_judge": 82.5,
-    "llm_judge_n_samples": 200
+    "llm_judge": 85.11999999999999,
+    "llm_judge_n_samples": 5000
   },
   "prompt_eng/ocr_augmented/validation": {
     "accuracy": 80.5,
@@ -5076,8 +5076,8 @@
     "f1": 84.99141582723713,
     "precision": 85.2804211516453,
     "recall": 85.78402136752136,
-    "llm_judge": 84.0,
-    "llm_judge_n_samples": 200
+    "llm_judge": 83.89999999999999,
+    "llm_judge_n_samples": 5000
   },
   "prompt_eng/ocr_cot/validation": {
     "accuracy": 57.34,
@@ -10091,8 +10091,8 @@
     "f1": 67.46434838379412,
     "precision": 65.50022556212866,
     "recall": 83.05584176934177,
-    "llm_judge": 78.0,
-    "llm_judge_n_samples": 200
+    "llm_judge": 79.82000000000001,
+    "llm_judge_n_samples": 5000
   },
   "prompt_eng/ocr_only/validation": {
     "accuracy": 41.08,
@@ -10104,8 +10104,8 @@
     "f1": 49.18426552664966,
     "precision": 49.73427943980819,
     "recall": 51.29096891996892,
-    "llm_judge": 53.0,
-    "llm_judge_n_samples": 200
+    "llm_judge": 56.52,
+    "llm_judge_n_samples": 5000
   },
   "prompt_eng/think_hard/validation": {
     "accuracy": 79.18,
@@ -10117,7 +10117,7 @@
     "f1": 84.78791206649572,
     "precision": 84.70891082612266,
     "recall": 86.19645448816416,
-    "llm_judge": 83.0,
-    "llm_judge_n_samples": 200
+    "llm_judge": 83.67999999999999,
+    "llm_judge_n_samples": 5000
   }
 }

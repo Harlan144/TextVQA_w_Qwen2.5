@@ -8,6 +8,6 @@
   "f1": 86.80690156875434,
   "precision": 86.88346139971141,
   "recall": 87.62088183859153,
-  "llm_judge": 84.5,
-  "llm_judge_n_samples": 200
+  "llm_judge": 85.56,
+  "llm_judge_n_samples": 5000
 }

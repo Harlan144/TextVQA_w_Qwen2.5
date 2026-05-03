@@ -16,6 +16,44 @@ import seaborn as sns
 
 from src.utils import load_json, ensure_dir, setup_logging
 
+# Canonical strategy order used for all plots and tables.
+# Grouped: baseline → prompt tweaks → reasoning → OCR variants → ablation
+STRATEGY_ORDER = [
+    "baseline",
+    "no_system_prompt",
+    "few_shot",
+    "format_constraint",
+    "think_hard",
+    "chain_of_thought",
+    "ocr_augmented",
+    "ocr_cot",
+    "ocr_only",
+]
+
+DISPLAY_NAMES = {
+    "baseline": "Baseline",
+    "no_system_prompt": "No-System-Prompt",
+    "few_shot": "Few-Shot",
+    "format_constraint": "Format Constraint",
+    "think_hard": "Think Hard",
+    "chain_of_thought": "Chain-of-Thought",
+    "ocr_augmented": "OCR-Augmented",
+    "ocr_cot": "OCR + CoT",
+    "ocr_only": "OCR-Only",
+}
+
+
+def _strategy_sort_key(name: str) -> tuple:
+    """Return a sort key that follows STRATEGY_ORDER.
+
+    Works on both raw keys ('baseline') and experiment paths
+    ('prompt_eng/baseline/validation').
+    """
+    for i, s in enumerate(STRATEGY_ORDER):
+        if s in name:
+            return (i, name)
+    return (len(STRATEGY_ORDER), name)
+
 
 def load_all_results(results_dir: Path) -> dict:
     """Scan the results directory and load all metrics.json files."""
@@ -64,11 +102,11 @@ def plot_accuracy_comparison(experiments: dict, output_dir: Path):
     names = []
     acc_vals = []
     judge_vals = []
-    for name, metrics in sorted(experiments.items()):
+    for name, metrics in sorted(experiments.items(), key=lambda kv: _strategy_sort_key(kv[0])):
         if "accuracy" in metrics:
             short = name.replace("prompt_eng/", "").replace("zero_shot/", "ZS: ").replace("finetune/", "FT: ")
             short = short.replace("/validation", "").replace("/test", " (test)")
-            names.append(short)
+            names.append(DISPLAY_NAMES.get(short, short))
             acc_vals.append(metrics["accuracy"])
             judge_vals.append(metrics.get("llm_judge", 0) or 0)
 
@@ -116,10 +154,10 @@ def plot_metrics_heatmap(experiments: dict, output_dir: Path):
 
     names = []
     data = []
-    for name, metrics in sorted(experiments.items()):
-        short = name.replace("prompt_eng/", "PE: ").replace("zero_shot/", "ZS: ").replace("finetune/", "FT: ")
+    for name, metrics in sorted(experiments.items(), key=lambda kv: _strategy_sort_key(kv[0])):
+        short = name.replace("prompt_eng/", "").replace("zero_shot/", "ZS: ").replace("finetune/", "FT: ")
         short = short.replace("/validation", "").replace("/test", " (test)")
-        names.append(short)
+        names.append(DISPLAY_NAMES.get(short, short))
         data.append([metrics.get(m, 0) for m in available_metrics])
 
     fig, ax = plt.subplots(figsize=(max(8, len(available_metrics) * 2), max(4, len(names) * 0.6)))
@@ -508,7 +546,7 @@ def analyze_errors(results_dir: Path, output_dir: Path):
     error_type_order = ["wrong_answer", "partial_match", "verbose", "no_answer"]
     error_type_order = [e for e in error_type_order if e in all_error_types]
 
-    strategies = sorted(strategy_errors.keys())
+    strategies = sorted(strategy_errors.keys(), key=_strategy_sort_key)
     x = np.arange(len(strategies))
     n_types = len(error_type_order)
     width = 0.8 / max(n_types, 1)
@@ -626,11 +664,11 @@ def plot_llm_judge(experiments: dict, output_dir: Path):
     """Bar chart of LLM-as-judge scores across strategies."""
     names = []
     scores = []
-    for name, metrics in sorted(experiments.items()):
+    for name, metrics in sorted(experiments.items(), key=lambda kv: _strategy_sort_key(kv[0])):
         if metrics.get("llm_judge") is not None:
             short = name.replace("prompt_eng/", "").replace("zero_shot/", "ZS: ").replace("finetune/", "FT: ")
             short = short.replace("/validation", "").replace("/test", " (test)")
-            names.append(short)
+            names.append(DISPLAY_NAMES.get(short, short))
             scores.append(metrics["llm_judge"])
 
     if not names:
@@ -664,23 +702,15 @@ def save_json(data, path):
 
 def export_metrics_tsv(experiments: dict, output_dir: Path):
     """Export full metrics comparison as a TSV file."""
-    strategy_order = ["baseline", "no_system_prompt", "ocr_augmented", "few_shot", "format_constraint", "think_hard", "ocr_cot", "chain_of_thought", "ocr_only"]
-    display_names = {
-        "baseline": "Baseline", "no_system_prompt": "No-System-Prompt",
-        "ocr_augmented": "OCR-Augmented", "ocr_cot": "OCR + CoT",
-        "chain_of_thought": "Chain-of-Thought", "ocr_only": "OCR-Only",
-        "few_shot": "Few-Shot", "format_constraint": "Format Constraint",
-        "think_hard": "Think Hard",
-    }
     metric_keys = ["accuracy", "vqa_accuracy", "bleu", "meteor", "rouge_l", "f1", "precision", "recall", "llm_judge"]
     headers = ["Strategy", "Accuracy", "VQA Acc", "BLEU", "METEOR", "ROUGE-L", "F1", "Precision", "Recall", "LLM Judge"]
 
     rows = []
-    for strategy in strategy_order:
+    for strategy in STRATEGY_ORDER:
         for key, metrics in experiments.items():
             if strategy in key:
                 vals = [f"{metrics.get(m, 0):.1f}" for m in metric_keys]
-                rows.append([display_names.get(strategy, strategy)] + vals)
+                rows.append([DISPLAY_NAMES.get(strategy, strategy)] + vals)
                 break
 
     path = output_dir / "full_metrics_comparison.tsv"
@@ -699,27 +729,19 @@ def export_error_breakdown_tsv(results_dir: Path, output_dir: Path):
         return
 
     data = load_json(error_json)
-    strategy_order = ["baseline", "no_system_prompt", "ocr_augmented", "few_shot", "format_constraint", "think_hard", "ocr_cot", "chain_of_thought", "ocr_only"]
-    display_names = {
-        "baseline": "Baseline", "no_system_prompt": "No-System-Prompt",
-        "ocr_augmented": "OCR-Augmented", "ocr_cot": "OCR + CoT",
-        "chain_of_thought": "Chain-of-Thought", "ocr_only": "OCR-Only",
-        "few_shot": "Few-Shot", "format_constraint": "Format Constraint",
-        "think_hard": "Think Hard",
-    }
     error_types = ["wrong_answer", "partial_match", "verbose", "no_answer"]
     headers = ["Strategy", "Total", "Correct", "Correct %",
                "Wrong Answer", "Wrong Answer %", "Partial Match", "Partial Match %",
                "Verbose", "Verbose %", "No Answer", "No Answer %"]
 
     rows = []
-    for strategy in strategy_order:
+    for strategy in STRATEGY_ORDER:
         if strategy not in data:
             continue
         d = data[strategy]
         total = d["total"]
         correct = d["correct"]
-        row = [display_names.get(strategy, strategy), str(total), str(correct), f"{100*correct/total:.1f}"]
+        row = [DISPLAY_NAMES.get(strategy, strategy), str(total), str(correct), f"{100*correct/total:.1f}"]
         for etype in error_types:
             count = d["error_types"].get(etype, 0)
             row.extend([str(count), f"{100*count/total:.1f}"])

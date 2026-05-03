@@ -181,11 +181,12 @@ def compute_llm_judge(
     ground_truths: list[list[str]],
     model=None,
     processor=None,
+    max_samples: int | None = None,
 ) -> dict:
     """Use the VLM itself as a judge to score semantic similarity.
 
     Asks the model to rate prediction vs ground truth on a 0-1 scale.
-    Only runs on a sample to save compute.
+    Runs on all samples by default; set max_samples to limit.
     """
     if model is None or processor is None:
         logger.warning("LLM judge requires model and processor — skipping")
@@ -193,7 +194,7 @@ def compute_llm_judge(
 
     from src.model import generate_answer
 
-    sample_size = min(200, len(predictions))
+    sample_size = len(predictions) if max_samples is None else min(max_samples, len(predictions))
     step = max(1, len(predictions) // sample_size)
     scores = []
 
