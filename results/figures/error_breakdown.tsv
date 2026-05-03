@@ -1,0 +1,10 @@
+Strategy	Total	Correct	Correct %	Wrong Answer	Wrong Answer %	Partial Match	Partial Match %	Verbose	Verbose %	No Answer	No Answer %
+Baseline	5000	4122	82.4	565	11.3	312	6.2	1	0.0	0	0.0
+No-System-Prompt	5000	4110	82.2	559	11.2	329	6.6	2	0.0	0	0.0
+OCR-Augmented	5000	4025	80.5	602	12.0	371	7.4	2	0.0	0	0.0
+Few-Shot	5000	4105	82.1	585	11.7	309	6.2	1	0.0	0	0.0
+Format Constraint	5000	4119	82.4	579	11.6	301	6.0	1	0.0	0	0.0
+Think Hard	5000	3959	79.2	615	12.3	420	8.4	6	0.1	0	0.0
+OCR + CoT	5000	2867	57.3	586	11.7	1293	25.9	233	4.7	21	0.4
+Chain-of-Thought	5000	2600	52.0	512	10.2	1639	32.8	227	4.5	22	0.4
+OCR-Only	5000	2054	41.1	2137	42.7	725	14.5	81	1.6	3	0.1

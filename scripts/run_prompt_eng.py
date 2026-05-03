@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.utils import load_config, set_seed, save_json, ensure_dir, setup_logging
 from src.data import get_dataset
 from src.model import load_model, generate_answer
-from src.prompts import get_strategy, extract_final_answer, list_strategies, STRATEGIES
+from src.prompts import get_strategy, extract_final_answer, list_strategies, STRATEGIES, set_few_shot_examples
 from src.evaluate import compute_all_metrics, print_metrics
 
 
@@ -88,6 +88,29 @@ def run_prompt_engineering(config: dict):
         max_samples=data_cfg.get("max_samples"),
         cache_dir=data_cfg.get("cache_dir"),
     )
+
+    # Set up few-shot examples from training set if needed
+    if "few_shot" in strategies:
+        from src.data import get_dataset as _get_ds
+        train_ds = _get_ds(split="train", max_samples=100, cache_dir=data_cfg.get("cache_dir"))
+        # Pick 2 examples with short, unambiguous answers
+        fs_examples = []
+        for idx in range(len(train_ds)):
+            s = train_ds[idx]
+            answers = s["answers"]
+            # Use the most common answer
+            from collections import Counter
+            most_common = Counter(a.lower().strip() for a in answers).most_common(1)[0]
+            if most_common[1] >= 5 and len(most_common[0].split()) <= 3:
+                fs_examples.append({
+                    "image": s["image"],
+                    "question": s["question"],
+                    "answer": most_common[0],
+                })
+            if len(fs_examples) >= 2:
+                break
+        set_few_shot_examples(fs_examples)
+        print(f"Few-shot examples loaded: {[e['question'] for e in fs_examples]}")
 
     metric_names = eval_cfg.get("metrics", ["vqa_accuracy", "bleu", "meteor", "rouge", "f1"])
     all_results = {}

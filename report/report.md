@@ -8,7 +8,7 @@ May 7, 2026
 
 ## Abstract
 
-We evaluate the Qwen2.5-VL-3B-Instruct vision-language model on the TextVQA dataset using six prompt engineering strategies that each ablate a single variable from a shared baseline: OCR-augmented prompting, chain-of-thought (CoT) reasoning, removal of the system prompt, a combined OCR+CoT approach, and an OCR-only ablation (no image). All strategies are evaluated on accuracy, VQA accuracy, BLEU, METEOR, ROUGE-L, F1, precision/recall, and LLM-as-a-judge semantic scoring across the full 5,000-sample validation set. The baseline strategy achieves 82.4% accuracy, with the no-system-prompt and OCR-augmented variants performing comparably (82.2% and 80.5%). Chain-of-thought reasoning dramatically reduces exact-match accuracy to 41.7% despite the LLM judge indicating 78.0% semantic correctness, revealing that *answer format* matters more than *reasoning depth* for exact-match VQA metrics. Per-category analysis identifies Clock/Watch images as a consistent failure mode (64.1% and 65.6% accuracy), driven by the difficulty of reading analog clock hands.
+We evaluate the Qwen2.5-VL-3B-Instruct vision-language model on the TextVQA dataset using six prompt engineering strategies that each ablate a single variable from a shared baseline: OCR-augmented prompting, chain-of-thought (CoT) reasoning, removal of the system prompt, a combined OCR+CoT approach, and an OCR-only ablation (no image). All strategies are evaluated on accuracy, VQA accuracy, BLEU, METEOR, ROUGE-L, F1, precision/recall, and LLM-as-a-judge semantic scoring across the full 5,000-sample validation set. The baseline strategy achieves 82.4% accuracy, with the no-system-prompt and OCR-augmented variants performing comparably (82.2% and 80.5%). Chain-of-thought reasoning reduces exact-match accuracy to 52.0% despite the LLM judge indicating 78.0% semantic correctness, revealing that *answer format* matters more than *reasoning depth* for exact-match VQA metrics. Per-category analysis identifies Clock/Watch images as a consistent failure mode (64.1% and 65.6% accuracy), driven by the difficulty of reading analog clock hands.
 
 ---
 
@@ -76,7 +76,7 @@ The full prompt templates are shown below. All strategies use the Qwen chat form
 
 > The following text was detected in the image: [{comma-separated OCR tokens}]
 
-The key design tension is between reasoning depth and answer conciseness. CoT strategies encourage the model to identify text and reason about it, but produce multi-sentence outputs. Since TextVQA uses exact string matching, verbose answers score poorly even when the correct text is present in the response. For CoT strategies, we parse the model output for the last line beginning with "Answer:" and extract everything after it; if no such line exists, the full output is used.
+The key design tension is between reasoning depth and answer conciseness. CoT strategies encourage the model to identify text and reason about it, but produce multi-sentence outputs. Since TextVQA uses exact string matching, verbose answers score poorly even when the correct text is present in the response. For CoT strategies, we parse the model output for the last line containing "Answer:" and extract everything after that marker; if no such line exists, the full output is used.
 
 ### Evaluation Metrics
 
@@ -119,50 +119,57 @@ Table 1 presents the full results for all six prompt strategies evaluated on the
 | **Baseline** | **82.4** | **78.0** | **24.6** | **53.3** | **87.2** | **86.8** | 86.9 | **87.6** | **84.5** |
 | No-System-Prompt | 82.2 | 77.8 | 22.2 | 50.3 | 87.0 | 86.6 | 86.7 | 87.5 | 82.5 |
 | OCR-Augmented | 80.5 | 76.3 | 22.6 | 52.2 | 85.5 | 85.0 | 85.3 | 85.8 | 84.0 |
-| OCR + CoT | 47.3 | 44.6 | 1.3 | 37.5 | 56.3 | 57.1 | 54.8 | 84.4 | 78.0 |
-| Chain-of-Thought | 41.7 | 38.9 | 1.6 | 35.8 | 52.8 | 54.0 | 50.6 | 85.4 | 78.0 |
+| OCR + CoT | 57.3 | 54.2 | 2.6 | 42.7 | 67.1 | 67.5 | 65.5 | 83.1 | 78.0 |
+| Chain-of-Thought | 52.0 | 48.8 | 2.8 | 40.9 | 63.3 | 64.1 | 61.1 | 84.5 | 78.0 |
 | OCR-Only | 41.1 | 38.4 | 5.7 | 26.0 | 49.8 | 49.2 | 49.7 | 51.3 | 53.0 |
 
-The strategies cluster into two clear groups. The top group (Baseline, No-System-Prompt, OCR-Augmented) all produce concise direct answers and achieve 80--82% accuracy. The bottom group (CoT variants, OCR-Only) score 41--47% on exact match. Notably, the CoT strategies maintain high recall (84--85%) because the correct answer text is typically present somewhere in the verbose output, but precision drops to ~51--55% because of the surrounding reasoning text.
+The strategies cluster into two clear groups. The top group (Baseline, No-System-Prompt, OCR-Augmented) all produce concise direct answers and achieve 80--82% accuracy. The bottom group (CoT variants, OCR-Only) score 41--57% on exact match. The CoT strategies maintain high recall (83--85%) because the correct answer text is typically present somewhere in the verbose output, but precision drops to ~61--66% because of the surrounding reasoning text.
 
-**Figure 1.** Grouped bar chart comparing accuracy (match-any) and VQA accuracy (official min(1, n/3)) across all six strategies.
+**Figure 1.** Exact-match accuracy vs. LLM-as-a-Judge semantic correctness across all six strategies. The gap between the two bars reveals how much each strategy's performance is limited by answer formatting rather than reasoning quality.
 
-![Accuracy comparison across strategies](../results/figures/accuracy_comparison.png)
+![Accuracy vs LLM Judge comparison across strategies](../results/figures/accuracy_comparison.png)
 
 ### LLM-as-a-Judge
 
 The LLM-as-a-judge metric reveals that exact-match accuracy understates the semantic correctness of CoT strategies. The judge—the model itself—scores whether the prediction semantically matches the reference answers, independent of format.
 
-**Figure 2.** LLM-as-a-judge semantic similarity scores across strategies. CoT strategies score 78.0%, much closer to the baseline's 84.5% than exact-match accuracy suggests (41.7% vs. 82.4%).
+**Figure 2.** LLM-as-a-judge semantic similarity scores across strategies. CoT strategies score 78.0%, much closer to the baseline's 84.5% than exact-match accuracy suggests (52.0% vs. 82.4%).
 
 ![LLM judge scores across strategies](../results/figures/llm_judge.png)
 
-The gap between exact-match accuracy and LLM judge score is largest for CoT strategies: Chain-of-Thought scores 41.7% on accuracy but 78.0% with the judge (a 36.3 percentage point gap). For baseline, the gap is only 2.1 points (82.4% vs 84.5%). This confirms that CoT outputs contain the correct information but fail the exact-match evaluation protocol. OCR-Only is the exception: the LLM judge also scores it low (53.0%), confirming that without the image, the model genuinely struggles rather than just formatting poorly.
+The gap between exact-match accuracy and LLM judge score is largest for CoT strategies: Chain-of-Thought scores 52.0% on accuracy but 78.0% with the judge (a 26.0 percentage point gap). For baseline, the gap is only 2.1 points (82.4% vs 84.5%). This confirms that CoT outputs contain the correct information but fail the exact-match evaluation protocol. OCR-Only is the exception: the LLM judge also scores it low (53.0%), confirming that without the image, the model genuinely struggles rather than just formatting poorly.
 
 ### Qualitative Examples
 
 **Table 2.** Examples where baseline succeeds but chain-of-thought fails, illustrating the format vs. reasoning tradeoff. The CoT output typically contains the correct answer embedded in reasoning text.
 
-| Question | Ground Truth | Baseline Prediction | CoT Prediction | CoT Raw Output (truncated) |
-|---|---|---|---|---|
-| "What is the brand of this camera?" | dakota | **Dakota** (correct) | "To determine the brand..." (wrong) | "...The text 'DAKOTA DIGITAL' is clearly visible on the camera..." |
-| "What kind of beer is this?" | ale, stone | **stone** (correct) | Pale Ale (wrong) | "...The label mentions 'STONE' prominently..." |
-| "What brand of watch is that?" | ap | **AP** (correct) | Audemars Piguet (wrong) | "...distinctive features that might indicate the brand name..." |
-| "What color are the letters on this sign?" | red | **red** (correct) | "The text 'Denny's' is displayed..." (wrong) | Full sentence instead of one word |
+**Example 2a.** "What kind of beer is this?" — Ground truth: **ale, stone**. Baseline predicts **stone** (correct); CoT predicts "Pale Ale" (wrong). The CoT reasoning mentions "The label mentions 'STONE' prominently" but arrives at the wrong final answer.
 
-<!-- TODO: Include actual images from dataset for these examples (image IDs: 003a8ae2ef43b901, 2b538a43dd933fc1, 181f00d3ee2b2076, 5ce862cbefd8458f) -->
+![Stone Sublimely Self-Righteous Ale bottle](../results/figures/examples/2b538a43dd933fc1.png)
+
+**Example 2b.** "What brand of watch is that?" — Ground truth: **ap**. Baseline predicts **AP** (correct); CoT predicts "Audemars Piguet" (wrong)—semantically correct but fails exact match against the abbreviation.
+
+![Audemars Piguet watch](../results/figures/examples/181f00d3ee2b2076.png)
+
+**Example 2c.** "What color are the letters on this sign?" — Ground truth: **red**. Baseline predicts **red** (correct); CoT outputs "The text 'Denny's' is displayed on the sign. The letters are red."—a full sentence instead of one word.
+
+![Denny's sign](../results/figures/examples/5ce862cbefd8458f.png)
 
 **Table 3.** Examples where chain-of-thought succeeds but baseline fails, showing cases where reasoning helps.
 
-| Question | Ground Truth | Baseline Prediction | CoT Prediction |
-|---|---|---|---|
-| "How much for a can of skoal?" | 3.82 | $4.52 (wrong) | **$3.82** (correct) |
-| "What beer is this?" | schin | schnu cervejao (wrong) | **Schin** (correct) |
-| "Who is the author of this book?" | w.st.reymont | W. ST. REYMONDT (wrong) | **W.ST.REYMONT** (correct) |
+**Example 3a.** "How much for a can of skoal?" — Ground truth: **3.82**. Baseline predicts $4.52 (wrong); CoT predicts **$3.82** (correct).
 
-<!-- TODO: Include actual images for these examples (image IDs: fa9ffd5aca1e4e51, 1f54ecbe84b9805f, 1ef8743670718aa2) -->
+![Convenience store with price signs](../results/figures/examples/fa9ffd5aca1e4e51.png)
 
-CoT reasoning helps baseline fail cases only rarely: 2,120 samples flip from correct (baseline) to incorrect (CoT), while only 81 flip from incorrect to correct. When CoT does help, it is typically on questions requiring multi-step reading (e.g., locating specific text among many candidates, or reading partially obscured characters where step-by-step reasoning yields a more careful reading).
+**Example 3b.** "What beer is this?" — Ground truth: **schin**. Baseline predicts "schnu cervejao" (wrong); CoT predicts **Schin** (correct).
+
+![Schin beer can](../results/figures/examples/1f54ecbe84b9805f.png)
+
+**Example 3c.** "Who is the author of this book?" — Ground truth: **w.st.reymont**. Baseline predicts "W. ST. REYMONDT" (wrong); CoT predicts **W.ST.REYMONT** (correct).
+
+![Komediantka book cover by W.St.Reymont](../results/figures/examples/1ef8743670718aa2.png)
+
+CoT reasoning helps baseline fail cases only rarely: 1,626 samples flip from correct (baseline) to incorrect (CoT), while only 104 flip from incorrect to correct. When CoT does help, it is typically on questions requiring multi-step reading (e.g., locating specific text among many candidates, or reading partially obscured characters where step-by-step reasoning yields a more careful reading).
 
 ### Error Analysis
 
@@ -175,7 +182,7 @@ Figure 3 shows the outcome breakdown across all strategies as a stacked percenta
 The error profiles differ qualitatively between strategy groups:
 
 - **Concise strategies** (Baseline, No-System-Prompt, OCR-Augmented): ~80--82% correct, with errors dominated by wrong answers (11--12%) and partial matches (6--7%). Verbose errors are essentially absent (<0.1%).
-- **CoT strategies** (Chain-of-Thought, OCR + CoT): ~42--47% correct, with the dominant error type being partial match (37--44%). These are answers where the correct text appears inside a longer response. Verbose errors also spike to 6%, and genuine wrong answers are actually *lower* than for concise strategies (8--9%).
+- **CoT strategies** (Chain-of-Thought, OCR + CoT): ~52--57% correct, with the dominant error type being partial match (26--33%). These are answers where the correct text appears inside a longer response. Verbose errors also spike to ~5%, and genuine wrong answers are comparable to concise strategies (10--12%).
 - **OCR-Only**: 41% correct with 43% wrong answers—the highest wrong-answer rate. Without the image, the model frequently picks the wrong OCR token.
 
 The key insight is that CoT strategies do not produce more wrong answers—they produce more *formatting* errors. The model identifies the correct text but wraps it in reasoning that fails exact matching.
@@ -212,7 +219,9 @@ Clock images are the worst-performing high-count category (64.1% accuracy, n=273
 | "What time does the watch say?" | 4:49 | 10:35 | 10:15 | — |
 | "What time does the top clock show?" | 10:07 | 10:10 | 10:02 | 10:10 |
 
-<!-- TODO: Include actual Clock failure images (image IDs: 181f00d3ee2b2076, 43d24d5cd7aa9792, e6aafe9677bd0f76, 14e0ea396adc7cca) -->
+**Figure 5.** Example Clock failure. "What time does the clock say?" — Ground truth: **4:34**. Baseline predicts 10:23; CoT predicts 10:10. The model cannot reliably interpret analog clock hand positions.
+
+![Analog clock showing 4:34](../results/figures/examples/43d24d5cd7aa9792.png)
 
 The model's clock predictions are consistently wrong across all strategies, indicating this is a fundamental vision capability gap rather than a prompt engineering issue. No prompt strategy—including CoT reasoning about hand positions—reliably fixes the problem. OCR tokens are also unhelpful because analog clocks typically contain no machine-readable text (only the numeral positions, not the current time).
 
@@ -224,7 +233,7 @@ The model's clock predictions are consistently wrong across all strategies, indi
 
 The most striking result is that chain-of-thought reasoning, despite being a widely used technique for improving LLM performance, actively hurts TextVQA accuracy. This is not because CoT produces worse reasoning—inspection of CoT outputs shows the model frequently identifies the correct text—but because the evaluation protocol requires exact string matching against short annotated answers. A response like "The text on the phone says NOKIA, so the brand is Nokia" contains the correct answer but fails to match "nokia" exactly.
 
-The LLM-as-a-judge metric confirms this interpretation: CoT strategies score 78.0% on semantic correctness versus 84.5% for baseline, a much smaller gap than the 41.7% vs 82.4% difference on exact match. The error analysis further supports this: CoT strategies have *fewer* wrong-answer errors than the baseline (8--9% vs 11%) but *far more* partial-match and verbose errors (44% vs 6%).
+The LLM-as-a-judge metric confirms this interpretation: CoT strategies score 78.0% on semantic correctness versus 84.5% for baseline, a much smaller gap than the 52.0% vs 82.4% difference on exact match. The error analysis further supports this: CoT strategies have comparable wrong-answer rates to the baseline (10--12% vs 11%) but *far more* partial-match and verbose errors (31--37% vs 6%).
 
 This highlights a broader limitation of exact-match VQA evaluation. The choice of evaluation metric fundamentally shapes which prompt strategies appear "best." For downstream applications where semantic correctness matters more than exact format (e.g., clinical report generation), CoT strategies may in fact be preferable.
 
@@ -244,13 +253,13 @@ The no-system-prompt ablation shows nearly identical performance to baseline (82
 
 ### Limitations
 
-Several limitations should be noted. First, only one model (Qwen2.5-VL-3B) is evaluated; a multi-model comparison would strengthen the generality of findings about prompt strategy effectiveness. Second, the 4-bit quantization may reduce model capability relative to full-precision inference, though this is necessary given GPU memory constraints. Third, the prompt strategies are manually designed; automated prompt optimisation (e.g., DSPy or OPRO) could potentially find better formulations. Fourth, CoT strategies use a simple "Answer:" parsing heuristic that may miss correct answers formatted differently.
+Several limitations should be noted. First, only one model (Qwen2.5-VL-3B) is evaluated; a multi-model comparison would strengthen the generality of findings about prompt strategy effectiveness. Second, the 4-bit quantization may reduce model capability relative to full-precision inference, though this is necessary given GPU memory constraints. Third, the prompt strategies are manually designed; automated prompt optimisation (e.g., DSPy or OPRO) could potentially find better formulations. Fourth, CoT strategies use a parsing heuristic that searches for "Answer:" in the model output; while this catches common variants (e.g., "Final Answer:"), other formatting patterns may still be missed.
 
 ---
 
 ## Conclusion
 
-We evaluated Qwen2.5-VL-3B-Instruct on TextVQA using six prompt engineering strategies, each ablating a single variable from a shared baseline. The baseline strategy achieves 82.4% accuracy on the 5,000-sample validation set, with removing the system prompt (82.2%) and adding OCR tokens (80.5%) having minimal impact. Chain-of-thought reasoning dramatically reduces exact-match accuracy to 41.7% despite achieving 78.0% semantic correctness by LLM-as-a-judge, confirming that verbose output formatting—not reasoning quality—is the primary failure mode.
+We evaluated Qwen2.5-VL-3B-Instruct on TextVQA using six prompt engineering strategies, each ablating a single variable from a shared baseline. The baseline strategy achieves 82.4% accuracy on the 5,000-sample validation set, with removing the system prompt (82.2%) and adding OCR tokens (80.5%) having minimal impact. Chain-of-thought reasoning reduces exact-match accuracy to 52.0% despite achieving 78.0% semantic correctness by LLM-as-a-judge, confirming that verbose output formatting—not reasoning quality—is the primary failure mode.
 
 Per-category analysis reveals that Clock and Watch images are a systematic weak point (64.1% and 65.6% accuracy), driven by the model's inability to read analog clock hands—a vision capability gap unaffected by any prompt strategy.
 

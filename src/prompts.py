@@ -166,6 +166,105 @@ def ocr_only(image: Image.Image, question: str, ocr_tokens: Optional[list[str]] 
 
 
 # ---------------------------------------------------------------------------
+# Strategy 7: Few-shot — 2 demonstration examples before the question
+# ---------------------------------------------------------------------------
+
+# Stored few-shot examples (populated at runtime from the training set)
+_FEW_SHOT_EXAMPLES: list[dict] = []
+
+
+def set_few_shot_examples(examples: list[dict]):
+    """Set the few-shot demonstration examples.
+
+    Each example should have keys: image (PIL), question (str), answer (str).
+    Called once at startup from the runner script.
+    """
+    global _FEW_SHOT_EXAMPLES
+    _FEW_SHOT_EXAMPLES = examples
+
+
+def few_shot(image: Image.Image, question: str, ocr_tokens: Optional[list[str]] = None) -> list[dict]:
+    messages = [{"role": "system", "content": _SYSTEM_PROMPT}]
+    for ex in _FEW_SHOT_EXAMPLES:
+        messages.append({
+            "role": "user",
+            "content": [
+                _image_content(ex["image"]),
+                {"type": "text", "text": (
+                    f"Question: {ex['question']}\n"
+                    f"{_CONCISE_INSTRUCTION}"
+                )},
+            ],
+        })
+        messages.append({"role": "assistant", "content": ex["answer"]})
+    messages.append({
+        "role": "user",
+        "content": [
+            _image_content(image),
+            {"type": "text", "text": (
+                f"Question: {question}\n"
+                f"{_CONCISE_INSTRUCTION}"
+            )},
+        ],
+    })
+    return messages
+
+
+# ---------------------------------------------------------------------------
+# Strategy 8: Answer-format constraint — explicit short-answer instruction
+# ---------------------------------------------------------------------------
+
+_FORMAT_CONSTRAINT_INSTRUCTION = (
+    "Answer in 1 to 3 words only. No explanation, no sentences.\n"
+    "Answer:"
+)
+
+
+def format_constraint(image: Image.Image, question: str, ocr_tokens: Optional[list[str]] = None) -> list[dict]:
+    return [
+        {"role": "system", "content": _SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": [
+                _image_content(image),
+                {"type": "text", "text": (
+                    f"Question: {question}\n"
+                    f"{_FORMAT_CONSTRAINT_INSTRUCTION}"
+                )},
+            ],
+        },
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Strategy 9: Think hard — encourage careful reasoning with concise output
+# ---------------------------------------------------------------------------
+
+_THINK_HARD_INSTRUCTION = (
+    "Look very carefully at ALL text visible in the image. "
+    "Think hard about which text answers the question. "
+    "Give only the answer, nothing else.\n"
+    "Answer:"
+)
+
+
+def think_hard(image: Image.Image, question: str, ocr_tokens: Optional[list[str]] = None) -> list[dict]:
+    return [
+        {"role": "system", "content": _SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": [
+                _image_content(image),
+                {"type": "text", "text": (
+                    f"Question: {question}\n"
+                    f"{_THINK_HARD_INSTRUCTION}"
+                )},
+            ],
+        },
+    ]
+
+
+# ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
 
@@ -176,6 +275,9 @@ STRATEGIES = {
     "no_system_prompt": no_system_prompt,
     "ocr_cot": ocr_cot,
     "ocr_only": ocr_only,
+    "few_shot": few_shot,
+    "format_constraint": format_constraint,
+    "think_hard": think_hard,
 }
 
 
@@ -198,7 +300,8 @@ def extract_final_answer(text: str) -> str:
     """
     lines = text.strip().split("\n")
     for line in reversed(lines):
-        line_stripped = line.strip()
-        if line_stripped.lower().startswith("answer:"):
-            return line_stripped[len("answer:"):].strip()
+        line_lower = line.strip().lower()
+        idx = line_lower.rfind("answer:")
+        if idx != -1:
+            return line.strip()[idx + len("answer:"):].strip()
     return text.strip()
