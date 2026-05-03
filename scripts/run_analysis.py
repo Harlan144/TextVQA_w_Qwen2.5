@@ -562,7 +562,7 @@ def analyze_errors(results_dir: Path, output_dir: Path):
                         str(c), ha="center", va="bottom", fontsize=7)
 
     ax.set_xticks(x + width * (n_types - 1) / 2)
-    ax.set_xticklabels(strategies, rotation=45, ha="right", fontsize=9)
+    ax.set_xticklabels([DISPLAY_NAMES.get(s, s) for s in strategies], rotation=45, ha="right", fontsize=9)
     ax.set_ylabel("Count")
     ax.set_title("Error Type Comparison Across Strategies")
     ax.legend(title="Error Type")
@@ -595,7 +595,7 @@ def analyze_errors(results_dir: Path, output_dir: Path):
         ax.text(x[j], bot + pct / 2, f"{pct:.0f}%", ha="center", va="center", fontsize=7, color="white")
 
     ax.set_xticks(x)
-    ax.set_xticklabels(strategies, rotation=45, ha="right", fontsize=9)
+    ax.set_xticklabels([DISPLAY_NAMES.get(s, s) for s in strategies], rotation=45, ha="right", fontsize=9)
     ax.set_ylabel("% of Samples")
     ax.set_title("Outcome Breakdown by Strategy")
     ax.legend(title="Outcome", loc="center left", bbox_to_anchor=(1.0, 0.5))
