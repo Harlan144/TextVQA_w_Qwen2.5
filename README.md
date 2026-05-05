@@ -12,13 +12,16 @@ Evaluate and improve a vision-language model's ability to read and reason about 
 ## Approach
 
 1. **Zero-shot evaluation** — baseline performance of the pretrained model
-2. **Prompt engineering** — 6 strategies, each ablating one variable from the baseline:
+2. **Prompt engineering** — 9 strategies exploring different prompt variables:
    - Baseline (system prompt + image + question + concise instruction)
    - OCR-augmented (+OCR tokens)
    - Chain-of-thought (+CoT instruction)
    - No-system-prompt (removes the system prompt)
    - OCR + CoT (+OCR tokens + CoT instruction)
    - OCR-only (+OCR tokens, no image — ablation)
+   - Few-shot (in-context examples before the query)
+   - Format-constraint (explicit "1–3 words only" instruction)
+   - Think-hard (encourages careful reasoning with concise output)
 3. **LoRA fine-tuning** — parameter-efficient fine-tuning on the training set
 
 ## Setup
@@ -79,6 +82,7 @@ configs/                 Experiment configurations (YAML)
   zero_shot.yaml         Zero-shot evaluation config
   prompt_eng.yaml        Prompt engineering config
   finetune.yaml          LoRA fine-tuning config
+data/                    TextVQA dataset (HuggingFace Arrow cache)
 src/                     Core library
   data.py                TextVQA dataset loading
   model.py               Model loading (bfloat16 / 4-bit quantized)
@@ -90,6 +94,7 @@ scripts/                 Experiment entry points
   run_zero_shot.py       Zero-shot evaluation
   run_prompt_eng.py      Prompt engineering experiments
   run_finetune.py        Fine-tuning pipeline
+  run_llm_judge.py       LLM-as-a-Judge scoring
   run_analysis.py        Results analysis and visualization
 results/                 Auto-generated outputs
   zero_shot/             Zero-shot predictions and metrics
